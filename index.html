@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0D1B2A">
+<title>C&amp;M Future Fund</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="C&amp;M Future Fund">
+<style>
+:root{
+  --bg:#0a0e1a; --bg2:#0f1626; --panel:rgba(255,255,255,0.04); --panel-solid:#141c30;
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+  --txt:#e8edf7; --txt-dim:#8b9bb5; --txt-faint:#5a6b85;
+  --conner:#3b82f6; --conner-bg:rgba(59,130,246,0.12);
+  --mikayla:#a855f7; --mikayla-bg:rgba(168,85,247,0.12);
+  --profit:#10b981; --profit-bg:rgba(16,185,129,0.12);
+  --capital:#f59e0b; --capital-bg:rgba(245,158,11,0.12);
+  --invest:#06b6d4; --invest-bg:rgba(6,182,212,0.12);
+  --danger:#ef4444;
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono','Roboto Mono',ui-monospace,monospace;
+}
+/* THEMES */
+[data-theme="midnight"]{--bg:#0a0e1a;--bg2:#0f1626;--panel-solid:#141c30;}
+[data-theme="forest"]{--bg:#0a1410;--bg2:#0f1d16;--panel-solid:#14241b;--profit:#34d399;}
+[data-theme="plum"]{--bg:#120a1a;--bg2:#1a0f26;--panel-solid:#241433;--conner:#60a5fa;--mikayla:#c084fc;}
+[data-theme="slate"]{--bg:#0c0f14;--bg2:#12161d;--panel-solid:#1a1f29;}
+[data-theme="light"]{
+  --bg:#eef2f8;--bg2:#e2e9f3;--panel:rgba(255,255,255,0.7);--panel-solid:#ffffff;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --txt:#0f1b2e;--txt-dim:#52617a;--txt-faint:#8493aa;--shadow:0 8px 32px rgba(0,40,90,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--txt);
+  min-height:100vh;line-height:1.5;font-size:15px;
+  background-image:radial-gradient(circle at 15% 10%,rgba(59,130,246,0.06),transparent 40%),
+                   radial-gradient(circle at 85% 90%,rgba(168,85,247,0.06),transparent 40%);
+  background-attachment:fixed;padding-bottom:80px;
+}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(20px);
+  background:linear-gradient(180deg,var(--bg) 60%,transparent);padding:14px 0 8px;}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;}
+.logo{width:40px;height:40px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--profit),var(--invest));
+  display:grid;place-items:center;font-weight:800;font-size:17px;color:#fff;
+  box-shadow:0 4px 14px rgba(16,185,129,0.35);}
+.brand h1{font-size:16px;font-weight:700;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none;}
+.brand p{font-size:11px;color:var(--txt-dim);font-weight:500;}
+.hdr-actions{display:flex;gap:7px;flex-shrink:0;}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);
+  background:var(--panel);color:var(--txt);cursor:pointer;display:grid;place-items:center;
+  font-size:17px;transition:.18s;backdrop-filter:blur(10px);}
+.icon-btn:hover{background:var(--panel-solid);border-color:var(--border2);transform:translateY(-1px);}
+.icon-btn:active{transform:scale(.94);}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-top:12px;background:var(--panel);padding:5px;
+  border-radius:13px;border:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:fit-content;padding:9px 14px;border:none;background:transparent;
+  color:var(--txt-dim);font-family:var(--font);font-size:13px;font-weight:600;
+  border-radius:9px;cursor:pointer;transition:.18s;white-space:nowrap;}
+.tab.active{background:var(--panel-solid);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+
+main{padding-top:20px;}
+.view{display:none;animation:fade .35s ease;}
+.view.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* CARDS */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;backdrop-filter:blur(16px);margin-bottom:14px;}
+.card-solid{background:var(--panel-solid);}
+.section-title{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--txt-dim);margin-bottom:13px;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';width:3px;height:13px;border-radius:2px;background:var(--accent,var(--profit));}
+
+/* DASHBOARD GRID */
+.grand-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.grand-card{border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;
+  border:1px solid var(--border);}
+.grand-card.conner{background:linear-gradient(145deg,var(--conner-bg),transparent);border-color:rgba(59,130,246,0.25);}
+.grand-card.mikayla{background:linear-gradient(145deg,var(--mikayla-bg),transparent);border-color:rgba(168,85,247,0.25);}
+.grand-card .who{font-size:13px;font-weight:700;margin-bottom:3px;}
+.grand-card.conner .who{color:var(--conner);}
+.grand-card.mikayla .who{color:var(--mikayla);}
+.grand-card .label{font-size:10px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:0.06em;}
+.grand-card .total{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-top:6px;font-variant-numeric:tabular-nums;}
+.grand-card .sub{font-size:11px;color:var(--txt-dim);margin-top:8px;line-height:1.7;}
+.grand-card .sub b{color:var(--txt);font-weight:600;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;}
+.stat{background:var(--panel-solid);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
+.stat .k{font-size:11px;color:var(--txt-dim);font-weight:500;margin-bottom:5px;}
+.stat .v{font-size:20px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+.stat .v.sm{font-size:16px;}
+.stat.profit .v{color:var(--profit);} .stat.capital .v{color:var(--capital);}
+.stat.invest .v{color:var(--invest);} .stat.conner .v{color:var(--conner);}
+.stat.mikayla .v{color:var(--mikayla);}
+
+.split-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-bottom:1px solid var(--border);}
+.split-row:last-child{border-bottom:none;}
+.split-row .lbl{font-size:13px;color:var(--txt-dim);}
+.split-vals{display:flex;gap:18px;font-variant-numeric:tabular-nums;}
+.split-vals .cv{color:var(--conner);font-weight:600;font-size:14px;min-width:80px;text-align:right;}
+.split-vals .mv{color:var(--mikayla);font-weight:600;font-size:14px;min-width:80px;text-align:right;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:11px;font-weight:600;color:var(--txt-dim);text-transform:uppercase;letter-spacing:0.05em;}
+.field input,.field select,.field textarea{
+  background:var(--panel-solid);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:12px 13px;color:var(--txt);font-family:var(--font);font-size:15px;width:100%;
+  transition:.15s;appearance:none;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--profit);box-shadow:0 0 0 3px var(--profit-bg);}
+.field select{background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b9bb5' stroke-width='2'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat:no-repeat;background-position:right 11px center;background-size:18px;padding-right:38px;}
+.field input[readonly]{background:var(--panel);color:var(--txt-dim);border-style:dashed;}
+.auto-badge{font-size:9px;background:var(--profit-bg);color:var(--profit);padding:2px 6px;border-radius:5px;font-weight:700;margin-left:6px;}
+.alloc-box{grid-column:1/-1;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;background:var(--panel);}
+.alloc-box .ab-title{font-size:11px;font-weight:700;color:var(--txt-dim);text-transform:uppercase;margin-bottom:11px;letter-spacing:0.05em;}
+.alloc-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.conditional{display:none;}
+.conditional.show{display:grid;grid-column:1/-1;}
+
+.btn{padding:13px 20px;border-radius:var(--radius-sm);border:none;font-family:var(--font);
+  font-size:14px;font-weight:700;cursor:pointer;transition:.18s;display:inline-flex;
+  align-items:center;justify-content:center;gap:8px;}
+.btn-primary{background:linear-gradient(135deg,var(--profit),#0d9488);color:#fff;
+  box-shadow:0 6px 20px rgba(16,185,129,0.35);width:100%;font-size:15px;padding:15px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(16,185,129,0.45);}
+.btn-primary:active{transform:scale(.98);}
+.btn-ghost{background:var(--panel-solid);color:var(--txt);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--profit);color:var(--profit);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.btn-row .btn{flex:1;min-width:130px;}
+
+/* HISTORY TABLE */
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.chip{padding:7px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--panel);
+  color:var(--txt-dim);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;}
+.chip.active{background:var(--profit);color:#fff;border-color:var(--profit);}
+.search-box{flex:1;min-width:160px;}
+.search-box input{width:100%;background:var(--panel-solid);border:1px solid var(--border2);
+  border-radius:20px;padding:8px 15px;color:var(--txt);font-size:13px;font-family:var(--font);}
+.search-box input:focus{outline:none;border-color:var(--profit);}
+
+.entry-list{display:flex;flex-direction:column;gap:9px;}
+.entry{background:var(--panel-solid);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:13px 15px;border-left:3px solid var(--bar,var(--txt-faint));position:relative;transition:.15s;}
+.entry:hover{border-color:var(--border2);}
+.entry.t-profit{--bar:var(--profit);} .entry.t-withdrawal{--bar:var(--capital);}
+.entry.t-repayment{--bar:#facc15;} .entry.t-invest{--bar:var(--invest);}
+.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.entry-desc{font-weight:600;font-size:14px;margin-bottom:2px;}
+.entry-meta{font-size:11px;color:var(--txt-dim);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.type-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:0.03em;}
+.type-tag.t-profit{background:var(--profit-bg);color:var(--profit);}
+.type-tag.t-withdrawal{background:var(--capital-bg);color:var(--capital);}
+.type-tag.t-repayment{background:rgba(250,204,21,0.12);color:#facc15;}
+.type-tag.t-invest{background:var(--invest-bg);color:var(--invest);}
+.entry-amt{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+.entry-split{display:flex;gap:14px;margin-top:9px;padding-top:9px;border-top:1px solid var(--border);font-size:12px;}
+.entry-split span{color:var(--txt-dim);}
+.entry-split b{font-variant-numeric:tabular-nums;}
+.es-c b{color:var(--conner);} .es-m b{color:var(--mikayla);}
+.entry-actions{display:flex;gap:6px;margin-top:10px;}
+.mini-btn{font-size:11px;padding:5px 11px;border-radius:7px;border:1px solid var(--border2);
+  background:transparent;color:var(--txt-dim);cursor:pointer;transition:.15s;font-family:var(--font);font-weight:600;}
+.mini-btn:hover{color:var(--txt);border-color:var(--txt-dim);}
+.mini-btn.del:hover{color:var(--danger);border-color:var(--danger);}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+  z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0;}
+.modal-bg.show{display:flex;}
+@media(min-width:600px){.modal-bg{align-items:center;padding:20px;}}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px 20px 0 0;
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:22px;animation:slideup .3s ease;}
+@media(min-width:600px){.modal{border-radius:20px;}}
+@keyframes slideup{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.modal h3{font-size:17px;margin-bottom:4px;}
+.modal .modal-sub{font-size:12px;color:var(--txt-dim);margin-bottom:18px;}
+.modal-close{position:absolute;}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
+.theme-swatch{aspect-ratio:1.3;border-radius:11px;border:2px solid var(--border);cursor:pointer;
+  position:relative;overflow:hidden;transition:.15s;display:flex;align-items:flex-end;padding:8px;}
+.theme-swatch.active{border-color:var(--profit);box-shadow:0 0 0 3px var(--profit-bg);}
+.theme-swatch span{font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.6);position:relative;z-index:2;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);}
+.setting-row:last-child{border-bottom:none;}
+.setting-row .sr-info{flex:1;}
+.setting-row .sr-title{font-size:14px;font-weight:600;}
+.setting-row .sr-desc{font-size:11px;color:var(--txt-dim);margin-top:2px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--panel-solid);border:1px solid var(--border2);border-radius:12px;
+  padding:13px 20px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:.3s;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:9px;max-width:90vw;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{border-color:var(--profit);} .toast.ok::before{content:'✓';color:var(--profit);font-weight:800;}
+.toast.err{border-color:var(--danger);} .toast.err::before{content:'!';color:var(--danger);font-weight:800;}
+
+.empty{text-align:center;padding:50px 20px;color:var(--txt-faint);}
+.empty .ico{font-size:40px;margin-bottom:12px;opacity:0.5;}
+.note-line{font-size:11px;color:var(--txt-faint);margin-top:10px;line-height:1.6;}
+.disclaimer{font-size:11px;color:var(--capital);background:var(--capital-bg);
+  border-radius:10px;padding:11px 13px;margin-top:6px;line-height:1.5;}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
+[data-theme="light"] input[type=date]::-webkit-calendar-picker-indicator{filter:none;}
+.fund-bar{height:8px;border-radius:4px;background:var(--panel-solid);overflow:hidden;margin-top:10px;display:flex;}
+.fund-bar i{height:100%;display:block;}
+
+/* HOLDINGS */
+.seg{display:flex;gap:5px;background:var(--panel);padding:5px;border-radius:13px;
+  border:1px solid var(--border);margin-bottom:10px;}
+.seg-sub{margin-bottom:14px;}
+.seg-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--txt-dim);
+  font-family:var(--font);font-size:13px;font-weight:600;border-radius:9px;cursor:pointer;transition:.18s;}
+.seg-btn.active{background:var(--panel-solid);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+[data-theme="light"] .seg-btn.active{box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.hold-summary{padding:18px;}
+.hs-row{display:flex;gap:14px;}
+.hs-cell{flex:1;}
+.hs-k{font-size:11px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+.hs-v{font-size:24px;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;}
+.hs-meta{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:11px;color:var(--txt-dim);}
+.hold-list{display:flex;flex-direction:column;gap:9px;margin-bottom:12px;}
+.hold-card{background:var(--panel-solid);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px 15px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:13px;}
+.hold-card:hover{border-color:var(--invest);transform:translateY(-1px);}
+.hold-card:active{transform:scale(.99);}
+.hc-badge{width:42px;height:42px;border-radius:10px;flex-shrink:0;display:grid;place-items:center;
+  font-size:10px;font-weight:800;background:var(--invest-bg);color:var(--invest);text-align:center;line-height:1.1;}
+.hc-mid{flex:1;min-width:0;}
+.hc-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hc-tick{font-size:11px;color:var(--txt-faint);margin-top:1px;}
+.hc-right{text-align:right;flex-shrink:0;}
+.hc-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;}
+.hc-pl{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;}
+.hc-pl.up{color:var(--profit);} .hc-pl.down{color:var(--danger);}
+.hc-arrow{color:var(--txt-faint);font-size:16px;flex-shrink:0;}
+.cash-card{border-style:dashed;}
+
+/* FUND MODAL */
+.fm-stats{display:flex;gap:10px;margin:16px 0;}
+.fm-stat{flex:1;background:var(--panel-solid);border:1px solid var(--border);border-radius:10px;padding:11px;}
+.fm-stat .k{font-size:10px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:0.04em;}
+.fm-stat .v{font-size:16px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
+.fm-stat .v.up{color:var(--profit);} .fm-stat .v.down{color:var(--danger);}
+.range-seg{display:flex;gap:5px;background:var(--panel);padding:4px;border-radius:11px;border:1px solid var(--border);margin-bottom:14px;}
+.range-btn{flex:1;padding:8px;border:none;background:transparent;color:var(--txt-dim);
+  font-family:var(--font);font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;transition:.15s;}
+.range-btn.active{background:var(--invest);color:#fff;}
+.chart-wrap{position:relative;height:260px;width:100%;background:var(--panel-solid);
+  border:1px solid var(--border);border-radius:12px;padding:10px;}
+.fm-actions{display:flex;gap:8px;margin-top:12px;}
+.fm-actions .btn{flex:1;padding:11px;font-size:13px;}
+</style>
+</head>
+<body data-theme="midnight">
+
+<div class="wrap">
+<header>
+  <div class="hdr-row">
+    <div class="brand">
+      <div class="logo" id="brandLogo">C&amp;M</div>
+      <div>
+        <h1 id="brandTitle">Bargain Bakkies</h1>
+        <p id="brandSub">Conner &amp; Mikayla</p>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="installBtn" onclick="installApp()" title="Install app" style="display:none">⬇</button>
+      <button class="icon-btn" onclick="openModal('dataModal')" title="Backup & sync">⤓</button>
+      <button class="icon-btn" onclick="openModal('settingsModal')" title="Customize">⚙</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="add">Add Entry</button>
+    <button class="tab" data-view="history">History</button>
+    <button class="tab" data-view="capital">Capital Pot</button>
+    <button class="tab" data-view="invest">Investments</button>
+    <button class="tab" data-view="holdings">Holdings</button>
+  </div>
+</header>
+
+<main>
+  <!-- DASHBOARD -->
+  <section class="view active" id="dashboard">
+    <div class="grand-grid">
+      <div class="grand-card conner">
+        <div class="who">CONNER</div>
+        <div class="label">Grand Total</div>
+        <div class="total" id="d-conner-total">R0</div>
+        <div class="sub">
+          Capital: <b id="d-conner-cap">R0</b><br>
+          Cash profit: <b id="d-conner-cash">R0</b><br>
+          Investments: <b id="d-conner-inv">R0</b>
+        </div>
+      </div>
+      <div class="grand-card mikayla">
+        <div class="who">MIKAYLA</div>
+        <div class="label">Grand Total</div>
+        <div class="total" id="d-mikayla-total">R0</div>
+        <div class="sub">
+          Capital: <b id="d-mikayla-cap">R0</b><br>
+          Cash profit: <b id="d-mikayla-cash">R0</b><br>
+          Investments: <b id="d-mikayla-inv">R0</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="--accent:var(--capital)">
+      <div class="section-title" style="--accent:var(--capital)">Capital Pot</div>
+      <div class="stat-grid">
+        <div class="stat capital"><div class="k">Total in pot</div><div class="v" id="d-pot-total">R0</div></div>
+        <div class="stat"><div class="k">Deployed in vehicles</div><div class="v sm" id="d-pot-deployed">R0</div></div>
+        <div class="stat profit"><div class="k">Cash available</div><div class="v" id="d-pot-avail">R0</div></div>
+      </div>
+      <div class="fund-bar" id="d-fund-bar"></div>
+      <div class="note-line">Bar shows how much of the pot is currently out in vehicles (amber) vs available cash (green).</div>
+    </div>
+
+    <div class="card" style="--accent:var(--profit)">
+      <div class="section-title" style="--accent:var(--profit)">Profit Summary</div>
+      <div class="split-row"><span class="lbl">Total gross profit</span>
+        <div class="split-vals"><span class="cv" id="d-prof-c">R0</span><span class="mv" id="d-prof-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">→ Allocated to investments</span>
+        <div class="split-vals"><span class="cv" id="d-alloc-c">R0</span><span class="mv" id="d-alloc-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">→ Spending given to kids</span>
+        <div class="split-vals"><span class="cv" id="d-spend-c">R0</span><span class="mv" id="d-spend-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">Cash profit remaining</span>
+        <div class="split-vals"><span class="cv" id="d-rem-c">R0</span><span class="mv" id="d-rem-m">R0</span></div></div>
+      <div class="note-line">Vehicles sold: <b id="d-sales-count">0</b></div>
+    </div>
+
+    <div class="card" style="--accent:var(--invest)">
+      <div class="section-title" style="--accent:var(--invest)">Investments (purchase cost)</div>
+      <div class="split-row"><span class="lbl">ETF total</span>
+        <div class="split-vals"><span class="cv" id="d-etf-c">R0</span><span class="mv" id="d-etf-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">TFSA total</span>
+        <div class="split-vals"><span class="cv" id="d-tfsa-c">R0</span><span class="mv" id="d-tfsa-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">Total invested</span>
+        <div class="split-vals"><span class="cv" id="d-inv-c">R0</span><span class="mv" id="d-inv-m">R0</span></div></div>
+      <div class="disclaimer">⚠ Investment values are purchase cost only. Actual account balances will be higher due to market growth.</div>
+    </div>
+  </section>
+
+  <!-- ADD ENTRY -->
+  <section class="view" id="add">
+    <div class="card card-solid">
+      <div class="section-title">New Entry</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Entry Type</label>
+          <select id="f-type" onchange="onTypeChange()">
+            <option>Vehicle Profit</option>
+            <option>Capital Withdrawal</option>
+            <option>Capital Repayment</option>
+            <option>Investment Deposit</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="field full">
+          <label id="lbl-desc">Description / Vehicle</label>
+          <input type="text" id="f-desc" placeholder="e.g. Isuzu KB250 D/C">
+        </div>
+        <div class="field">
+          <label id="lbl-reg">Reg Number</label>
+          <input type="text" id="f-reg" placeholder="e.g. ABC 123 GP">
+        </div>
+        <div class="field">
+          <label id="lbl-amount">Profit Amount (R)</label>
+          <input type="number" id="f-amount" placeholder="0.00" step="0.01" oninput="onAmountChange()">
+        </div>
+
+        <!-- profit auto-split -->
+        <div class="conditional" id="cond-split">
+          <div class="alloc-box">
+            <div class="ab-title">Auto Split (50/50) <span class="auto-badge">AUTO</span></div>
+            <div class="alloc-grid">
+              <div class="field"><label style="color:var(--conner)">Conner share</label>
+                <input type="text" id="f-cshare" readonly></div>
+              <div class="field"><label style="color:var(--mikayla)">Mikayla share</label>
+                <input type="text" id="f-mshare" readonly></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- allocation -->
+        <div class="conditional" id="cond-alloc">
+          <div class="alloc-box">
+            <div class="ab-title">Allocate Profit — where does it go?</div>
+            <div class="alloc-grid">
+              <div class="field"><label style="color:var(--conner)">Conner → Invest (R)</label>
+                <input type="number" id="f-cinv" placeholder="0" step="0.01"></div>
+              <div class="field"><label style="color:var(--conner)">Conner → Spend (R)</label>
+                <input type="number" id="f-cspend" placeholder="0" step="0.01"></div>
+              <div class="field"><label style="color:var(--mikayla)">Mikayla → Invest (R)</label>
+                <input type="number" id="f-minv" placeholder="0" step="0.01"></div>
+              <div class="field"><label style="color:var(--mikayla)">Mikayla → Spend (R)</label>
+                <input type="number" id="f-mspend" placeholder="0" step="0.01"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- investment fields -->
+        <div class="conditional" id="cond-invest">
+          <div class="field"><label>Account Type</label>
+            <select id="f-acct" onchange="populateEntryFundPickers()"><option>ETF</option><option>TFSA</option></select></div>
+          <div class="field"><label>Source</label>
+            <select id="f-source"><option>Bakkie Winste</option><option>Carlos Bydrae</option></select></div>
+          <div class="alloc-box" style="grid-column:1/-1">
+            <div class="ab-title">Deposit Amount per Child</div>
+            <div class="alloc-grid">
+              <div class="field"><label style="color:var(--conner)">Conner (R)</label>
+                <input type="number" id="f-cinv2" placeholder="0" step="0.01"></div>
+              <div class="field"><label style="color:var(--mikayla)">Mikayla (R)</label>
+                <input type="number" id="f-minv2" placeholder="0" step="0.01"></div>
+            </div>
+          </div>
+          <div class="alloc-box" style="grid-column:1/-1">
+            <div class="ab-title">Link to a fund (optional — updates Holdings)</div>
+            <div class="alloc-grid">
+              <div class="field"><label style="color:var(--conner)">Conner's fund</label>
+                <select id="f-cfund"><option value="">— don't link —</option></select></div>
+              <div class="field"><label style="color:var(--mikayla)">Mikayla's fund</label>
+                <select id="f-mfund"><option value="">— don't link —</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Notes</label>
+          <input type="text" id="f-notes" placeholder="Optional">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="addEntry()">＋ Add Entry</button>
+      </div>
+      <input type="hidden" id="f-editid" value="">
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="view" id="history">
+    <div class="filters">
+      <div class="search-box"><input type="text" id="search" placeholder="🔍 Search entries..." oninput="renderHistory()"></div>
+    </div>
+    <div class="filters">
+      <button class="chip active" data-filter="all" onclick="setFilter(this,'all')">All</button>
+      <button class="chip" data-filter="Vehicle Profit" onclick="setFilter(this,'Vehicle Profit')">Profit</button>
+      <button class="chip" data-filter="Capital Withdrawal" onclick="setFilter(this,'Capital Withdrawal')">Withdrawal</button>
+      <button class="chip" data-filter="Capital Repayment" onclick="setFilter(this,'Capital Repayment')">Repayment</button>
+      <button class="chip" data-filter="Investment Deposit" onclick="setFilter(this,'Investment Deposit')">Investment</button>
+    </div>
+    <div class="entry-list" id="history-list"></div>
+  </section>
+
+  <!-- CAPITAL POT -->
+  <section class="view" id="capital">
+    <div class="card" style="--accent:var(--capital)">
+      <div class="section-title" style="--accent:var(--capital)">Capital Pot — Running Balance</div>
+      <div class="stat-grid">
+        <div class="stat capital"><div class="k">Total in pot</div><div class="v sm" id="c-total">R0</div></div>
+        <div class="stat"><div class="k">Deployed</div><div class="v sm" id="c-deployed">R0</div></div>
+        <div class="stat profit"><div class="k">Available</div><div class="v sm" id="c-avail">R0</div></div>
+      </div>
+    </div>
+    <div class="entry-list" id="capital-list"></div>
+  </section>
+
+  <!-- INVESTMENTS -->
+  <section class="view" id="invest">
+    <div class="card" style="--accent:var(--invest)">
+      <div class="section-title" style="--accent:var(--invest)">Investment Totals</div>
+      <div class="split-row"><span class="lbl">ETF (both kids)</span>
+        <div class="split-vals"><span class="cv" id="i-etf-c">R0</span><span class="mv" id="i-etf-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">TFSA (both kids)</span>
+        <div class="split-vals"><span class="cv" id="i-tfsa-c">R0</span><span class="mv" id="i-tfsa-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">From Bakkie Winste</span>
+        <div class="split-vals"><span class="cv" id="i-bw-c">R0</span><span class="mv" id="i-bw-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">From Carlos Bydrae</span>
+        <div class="split-vals"><span class="cv" id="i-cb-c">R0</span><span class="mv" id="i-cb-m">R0</span></div></div>
+    </div>
+    <div class="entry-list" id="invest-list"></div>
+  </section>
+
+  <!-- HOLDINGS -->
+  <section class="view" id="holdings">
+    <div class="seg" id="childSeg">
+      <button class="seg-btn active" data-child="Conner" onclick="setHoldChild('Conner')">Conner</button>
+      <button class="seg-btn" data-child="Mikayla" onclick="setHoldChild('Mikayla')">Mikayla</button>
+    </div>
+    <div class="seg seg-sub" id="acctSeg">
+      <button class="seg-btn active" data-acct="ZAR" onclick="setHoldAcct('ZAR')">EasyEquities ZAR</button>
+      <button class="seg-btn" data-acct="TFSA" onclick="setHoldAcct('TFSA')">TFSA</button>
+    </div>
+
+    <div class="hold-summary card" style="--accent:var(--invest)">
+      <div class="hs-row">
+        <div class="hs-cell">
+          <div class="hs-k">Portfolio value</div>
+          <div class="hs-v" id="hold-total">R0</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-k">Total profit/loss</div>
+          <div class="hs-v" id="hold-pl">R0</div>
+        </div>
+      </div>
+      <div class="hs-meta">
+        <span id="hold-sync-state">Showing captured values · tap ↻ to update from Google Sheet</span>
+        <button class="mini-btn" onclick="refreshPrices()" style="margin-left:auto">↻ Update prices</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="openAddFund()">＋ Add Fund</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="openDeposit()">↳ Add Deposit to Fund</button>
+    </div>
+    <div class="hold-list" id="hold-list"></div>
+    <div class="note-line" style="padding:0 4px">Tap a fund to see its performance graph, top it up, or sync the exact value. Daily % updates when prices refresh from your Google Sheet (see Backup → setup guide).</div>
+  </section>
+</main>
+</div>
+
+<!-- FUND GRAPH MODAL -->
+<div class="modal-bg" id="fundModal" onclick="if(event.target===this)closeModal('fundModal')">
+  <div class="modal" style="max-width:600px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div>
+        <h3 id="fm-name">Fund</h3>
+        <p class="modal-sub" id="fm-sub">—</p>
+      </div>
+      <button class="icon-btn" onclick="closeModal('fundModal')" style="flex-shrink:0">✕</button>
+    </div>
+    <div class="fm-stats">
+      <div class="fm-stat"><div class="k">Value</div><div class="v" id="fm-value">R0</div></div>
+      <div class="fm-stat"><div class="k">Profit/Loss</div><div class="v" id="fm-pl">R0</div></div>
+      <div class="fm-stat"><div class="k">Today</div><div class="v" id="fm-day">—</div></div>
+    </div>
+    <div class="range-seg" id="rangeSeg">
+      <button class="range-btn" data-r="7" onclick="setRange(7,this)">1W</button>
+      <button class="range-btn" data-r="30" onclick="setRange(30,this)">1M</button>
+      <button class="range-btn active" data-r="90" onclick="setRange(90,this)">3M</button>
+      <button class="range-btn" data-r="365" onclick="setRange(365,this)">1Y</button>
+      <button class="range-btn" data-r="0" onclick="setRange(0,this)">All</button>
+    </div>
+    <div class="chart-wrap"><canvas id="fundChart"></canvas></div>
+    <div class="note-line" id="fm-note"></div>
+    <div class="fm-actions">
+      <button class="btn btn-ghost" onclick="openTopUp()">＋ Top up this fund</button>
+      <button class="btn btn-ghost" onclick="openSyncValue()">⟳ Sync exact value</button>
+    </div>
+    <div class="fm-actions">
+      <button class="mini-btn del" onclick="deleteFund()" style="width:100%;padding:9px">Delete fund</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD FUND MODAL -->
+<div class="modal-bg" id="addFundModal" onclick="if(event.target===this)closeModal('addFundModal')">
+  <div class="modal">
+    <h3>Add a Fund</h3>
+    <p class="modal-sub" id="af-context">—</p>
+    <div class="field full" style="margin-bottom:10px">
+      <label>Fund name</label>
+      <input type="text" id="af-name" placeholder="e.g. Satrix Nasdaq 100">
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="field">
+        <label>Short tag (badge)</label>
+        <input type="text" id="af-short" maxlength="7" placeholder="STXNDQ">
+      </div>
+      <div class="field">
+        <label>JSE Ticker (optional)</label>
+        <input type="text" id="af-ticker" placeholder="JSE:STXNDQ">
+      </div>
+    </div>
+    <div class="field full" style="margin-bottom:6px">
+      <label>Starting amount paid in (R)</label>
+      <input type="number" id="af-paid" placeholder="0.00" step="0.01">
+    </div>
+    <div class="note-line" id="af-tickernote"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveNewFund()">Add Fund</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOSIT / TOP-UP MODAL -->
+<div class="modal-bg" id="depositModal" onclick="if(event.target===this)closeModal('depositModal')">
+  <div class="modal">
+    <h3 id="dep-title">Add Deposit to Fund</h3>
+    <p class="modal-sub" id="dep-sub">Pick the child, account and fund this money went into.</p>
+    <div id="dep-pickers">
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="field">
+          <label>Child</label>
+          <select id="dep-child" onchange="depRefreshFunds()"><option>Conner</option><option>Mikayla</option></select>
+        </div>
+        <div class="field">
+          <label>Account</label>
+          <select id="dep-acct" onchange="depRefreshFunds()"><option value="ZAR">EasyEquities ZAR</option><option value="TFSA">TFSA</option></select>
+        </div>
+      </div>
+      <div class="field full" style="margin-bottom:10px">
+        <label>Fund</label>
+        <select id="dep-fund"></select>
+      </div>
+    </div>
+    <div class="field full" style="margin-bottom:10px">
+      <label>Date</label>
+      <input type="date" id="dep-date">
+    </div>
+    <div class="field full" style="margin-bottom:6px">
+      <label>Amount paid in (R)</label>
+      <input type="number" id="dep-amount" placeholder="0.00" step="0.01">
+    </div>
+    <div class="note-line">This increases the fund's total paid-in. Its value grows with the live price from there; profit = value − total paid-in.</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveDeposit()">Add to Fund</button>
+    </div>
+  </div>
+</div>
+
+<!-- SYNC VALUE MODAL -->
+<div class="modal-bg" id="syncValModal" onclick="if(event.target===this)closeModal('syncValModal')">
+  <div class="modal">
+    <h3>Sync Exact Value</h3>
+    <p class="modal-sub">Paste the current value EasyEquities/Satrix shows for this fund to true it up exactly. Clear it to go back to live price tracking.</p>
+    <div class="field full" style="margin-bottom:6px">
+      <label>Current value from platform (R)</label>
+      <input type="number" id="sv-value" placeholder="0.00" step="0.01">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveSyncValue()">Save Value</button>
+      <button class="btn btn-ghost" onclick="clearSyncValue()" style="flex:0;min-width:90px">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA MODAL -->
+<div class="modal-bg" id="dataModal" onclick="if(event.target===this)closeModal('dataModal')">
+  <div class="modal">
+    <h3>Backup & Sync</h3>
+    <p class="modal-sub">Your data lives on this device. Back it up regularly.</p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="exportData()">⤓ Export Backup</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">⤒ Import Backup</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <div class="btn-row"><button class="btn btn-ghost" onclick="exportCSV()" style="flex:1">⊞ Export CSV (for Excel)</button></div>
+
+    <div class="setting-row" style="margin-top:14px">
+      <div class="sr-info">
+        <div class="sr-title">Google Sheets Sync</div>
+        <div class="sr-desc">Paste your Apps Script URL to sync. Setup guide included in the download.</div>
+      </div>
+    </div>
+    <div class="field full" style="margin-top:8px">
+      <input type="text" id="gsUrl" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="saveGsUrl()" style="flex:1">Save URL</button>
+      <button class="btn btn-primary" onclick="syncToSheets()" style="flex:1;width:auto">↑ Sync Now</button>
+    </div>
+
+    <div class="setting-row" style="margin-top:10px">
+      <div class="sr-info">
+        <div class="sr-title" style="color:var(--danger)">Reset all data</div>
+        <div class="sr-desc">Clears everything and reloads original historical data.</div>
+      </div>
+      <button class="btn btn-danger" style="padding:9px 14px;font-size:12px" onclick="resetData()">Reset</button>
+    </div>
+    <div class="note-line">Last backup reminder: export a file weekly and keep it safe (Google Drive, email to yourself, etc).</div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settingsModal" onclick="if(event.target===this)closeModal('settingsModal')">
+  <div class="modal">
+    <h3>Customize</h3>
+    <p class="modal-sub">All changes save automatically and stay set.</p>
+    <div class="theme-grid" id="themeGrid"></div>
+    <div class="field full" style="margin-bottom:10px">
+      <label>Icon text</label>
+      <input type="text" id="setLogo" maxlength="4" placeholder="C&amp;M" onchange="setBrand()">
+    </div>
+    <div class="field full" style="margin-bottom:10px">
+      <label>Title</label>
+      <input type="text" id="setTitle" maxlength="40" placeholder="Bargain Bakkies" onchange="setBrand()">
+    </div>
+    <div class="field full" style="margin-bottom:6px">
+      <label>Subtitle</label>
+      <input type="text" id="setSub" maxlength="50" placeholder="Conner &amp; Mikayla" onchange="setBrand()">
+    </div>
+    <div class="setting-row">
+      <div class="sr-info">
+        <div class="sr-title">Currency symbol</div>
+        <div class="sr-desc">Shown before amounts</div>
+      </div>
+      <input type="text" id="currencySym" value="R" maxlength="3" style="width:60px;text-align:center;background:var(--panel-solid);border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--txt);font-family:var(--font)" onchange="setCurrency()">
+    </div>
+    <div class="note-line">Bargain Bakkies Education Fund · works offline · install to home screen for app-like use.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SEED_DATA = [{"id":20220101000,"date":"2022-01-01","type":"Capital Repayment","desc":"Satrix Shares 2022","reg":"","amount":7492,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20220617001,"date":"2022-06-17","type":"Capital Repayment","desc":"Nasdaq+SP500 proceeds (Mikayla)","reg":"","amount":71042,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":"Initial pot"},{"id":20220617002,"date":"2022-06-17","type":"Capital Repayment","desc":"Nasdaq+SP500 proceeds (Conner)","reg":"","amount":69815,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":"Initial pot"},{"id":20231001003,"date":"2023-10-01","type":"Capital Repayment","desc":"Inheritance Oct/Nov 2023","reg":"","amount":401000,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":"R200 500 each"},{"id":20231001004,"date":"2023-10-01","type":"Capital Withdrawal","desc":"Isuzu FY08 WBGP","reg":"FY08 WB GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20231001005,"date":"2023-10-01","type":"Vehicle Profit","desc":"Isuzu FY08 WBGP","reg":"FY08 WB GP","amount":8600,"cInv":0,"cSpend":1000,"mInv":0,"mSpend":1000,"acct":"","source":"","notes":""},{"id":20231106006,"date":"2023-11-06","type":"Capital Withdrawal","desc":"Isuzu DB54 YTGP","reg":"DB54 YT GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20231106007,"date":"2023-11-06","type":"Vehicle Profit","desc":"Isuzu DB54 YTGP","reg":"DB54 YT GP","amount":11112,"cInv":0,"cSpend":900,"mInv":0,"mSpend":900,"acct":"","source":"","notes":"Elk kind R900 spend"},{"id":20240301008,"date":"2024-03-01","type":"Capital Withdrawal","desc":"Ford Ranger Dropside","reg":"HG60 BB GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240301009,"date":"2024-03-01","type":"Vehicle Profit","desc":"Ford Ranger Dropside","reg":"HG60 BB GP","amount":10512,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240305010,"date":"2024-03-05","type":"Capital Withdrawal","desc":"3x Elite Batch","reg":"","amount":325000,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":"R325K total"},{"id":20240305011,"date":"2024-03-05","type":"Vehicle Profit","desc":"Isuzu HT00 MNGP","reg":"HT00 MN GP","amount":17490,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240401012,"date":"2024-04-01","type":"Capital Withdrawal","desc":"Chevrolet DN77 ZXGP","reg":"DN77 ZX GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240401013,"date":"2024-04-01","type":"Vehicle Profit","desc":"Chevrolet DN77 ZXGP","reg":"DN77 ZX GP","amount":6632,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240425014,"date":"2024-04-25","type":"Vehicle Profit","desc":"Isuzu JB15 VWGP Elite","reg":"JB15 VW GP","amount":20722,"cInv":0,"cSpend":875,"mInv":0,"mSpend":0,"acct":"","source":"","notes":"R875 spend"},{"id":20240701015,"date":"2024-07-01","type":"Capital Withdrawal","desc":"2019 EcoSport JF71 ZKGP","reg":"JF71 ZK GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20240901016,"date":"2024-09-01","type":"Capital Withdrawal","desc":"NP200 JV35 JVGP","reg":"JV35 JV GP","amount":0,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250101017,"date":"2025-01-01","type":"Investment Deposit","desc":"Satrix","reg":"","amount":0,"cInv":3334,"cSpend":0,"mInv":3334,"mSpend":0,"acct":"TFSA","source":"Carlos Bydrae","notes":"Nasdaq 100"},{"id":20250101018,"date":"2025-01-01","type":"Investment Deposit","desc":"Satrix","reg":"","amount":0,"cInv":997.93,"cSpend":0,"mInv":1000,"mSpend":0,"acct":"ETF","source":"Carlos Bydrae","notes":"Nasdaq 100"},{"id":20250205019,"date":"2025-02-05","type":"Vehicle Profit","desc":"2019 EcoSport JF71 ZKGP","reg":"JF71 ZK GP","amount":10200,"cInv":2625,"cSpend":660,"mInv":2625,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250328020,"date":"2025-03-28","type":"Vehicle Profit","desc":"NP200 JV35 JVGP","reg":"JV35 JV GP","amount":6552,"cInv":0,"cSpend":1535,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250331021,"date":"2025-03-31","type":"Capital Repayment","desc":"Satrix balance before Mar 2025","reg":"","amount":6428,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250519022,"date":"2025-05-19","type":"Capital Withdrawal","desc":"Hilux VVTi Eqstra","reg":"","amount":186500,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250601023,"date":"2025-06-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":2625,"cSpend":0,"mInv":2625,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":"Jun 2025"},{"id":20250618024,"date":"2025-06-18","type":"Vehicle Profit","desc":"2019 Isuzu D-TEC HW16 BZGP","reg":"HW16 BZ GP","amount":5249,"cInv":2625,"cSpend":0,"mInv":2625,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250619025,"date":"2025-06-19","type":"Capital Repayment","desc":"Capital back Jun 2025","reg":"","amount":178741,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250801026,"date":"2025-08-01","type":"Vehicle Profit","desc":"Hilux VVTi Eqstra","reg":"","amount":6896,"cInv":2698,"cSpend":0,"mInv":2698,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250801027,"date":"2025-08-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":2698,"cSpend":0,"mInv":2698,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":"Aug 2025"},{"id":20250801028,"date":"2025-08-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":750,"cSpend":0,"mInv":750,"mSpend":0,"acct":"TFSA","source":"Bakkie Winste","notes":""},{"id":20250820029,"date":"2025-08-20","type":"Capital Withdrawal","desc":"Aug 2025 batch","reg":"","amount":201250,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20250901030,"date":"2025-09-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":750,"cSpend":0,"mInv":750,"mSpend":0,"acct":"ETF","source":"Carlos Bydrae","notes":""},{"id":20250901031,"date":"2025-09-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":250,"cSpend":0,"mInv":250,"mSpend":0,"acct":"TFSA","source":"Carlos Bydrae","notes":""},{"id":20251001032,"date":"2025-10-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":3591,"cSpend":0,"mInv":3591,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":""},{"id":20251001033,"date":"2025-10-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":1000,"cSpend":0,"mInv":1000,"mSpend":0,"acct":"TFSA","source":"Bakkie Winste","notes":""},{"id":20251007034,"date":"2025-10-07","type":"Vehicle Profit","desc":"Ford Ranger 2.2 TDCI XL D/C","reg":"","amount":10183,"cInv":3591,"cSpend":600,"mInv":3591,"mSpend":600,"acct":"","source":"","notes":"R600/kind spend"},{"id":20251014035,"date":"2025-10-14","type":"Capital Repayment","desc":"Capital back Oct 2025","reg":"","amount":201250,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20251201036,"date":"2025-12-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":6000,"cSpend":0,"mInv":6000,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":""},{"id":20251201037,"date":"2025-12-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":1535,"cSpend":0,"mInv":1535,"mSpend":0,"acct":"TFSA","source":"Bakkie Winste","notes":""},{"id":20260101038,"date":"2026-01-01","type":"Vehicle Profit","desc":"Kempston #1","reg":"","amount":9320,"cInv":6000,"cSpend":0,"mInv":6000,"mSpend":0,"acct":"","source":"","notes":""},{"id":20260101039,"date":"2026-01-01","type":"Vehicle Profit","desc":"Kempston #2","reg":"","amount":7886,"cInv":5360,"cSpend":0,"mInv":5360,"mSpend":0,"acct":"","source":"","notes":""},{"id":20260101040,"date":"2026-01-01","type":"Vehicle Profit","desc":"Kempston JHB #2 Isuzu D-TEC 2018","reg":"","amount":5833,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20260101041,"date":"2026-01-01","type":"Vehicle Profit","desc":"NP200 2017 Hyperkar Maart","reg":"","amount":5750,"cInv":0,"cSpend":0,"mInv":0,"mSpend":0,"acct":"","source":"","notes":""},{"id":20260101042,"date":"2026-01-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":1500,"cSpend":0,"mInv":1500,"mSpend":0,"acct":"ETF","source":"Carlos Bydrae","notes":""},{"id":20260101043,"date":"2026-01-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":500,"cSpend":0,"mInv":500,"mSpend":0,"acct":"TFSA","source":"Carlos Bydrae","notes":""},{"id":20260201044,"date":"2026-02-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":5360,"cSpend":0,"mInv":5360,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":""},{"id":20260201045,"date":"2026-02-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":1500,"cSpend":0,"mInv":1500,"mSpend":0,"acct":"TFSA","source":"Bakkie Winste","notes":""},{"id":20260401046,"date":"2026-04-01","type":"Vehicle Profit","desc":"Kempston April Isuzu JFS 483 EC","reg":"JFS 483 EC","amount":8146,"cInv":3323,"cSpend":0,"mInv":3323,"mSpend":0,"acct":"","source":"","notes":""},{"id":20260501047,"date":"2026-05-01","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":3323,"cSpend":0,"mInv":3323,"mSpend":0,"acct":"ETF","source":"Bakkie Winste","notes":""},{"id":20260513048,"date":"2026-05-13","type":"Investment Deposit","desc":"EasyEquities","reg":"","amount":0,"cInv":750,"cSpend":0,"mInv":750,"mSpend":0,"acct":"TFSA","source":"Bakkie Winste","notes":""}];
+const HOLDINGS_SEED = {"Conner":{"ZAR":[{"fund":"10X Total World","short":"10X","ticker":"JSE:GLOBAL","value":6193.2,"pl":302.2,"id":1,"paidIn":5891.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"1nvest S&P500 Info Tech","short":"1nvest","ticker":null,"value":6418.13,"pl":970.13,"id":2,"paidIn":5448.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix INDI 25","short":"STXIND","ticker":"JSE:STXIND","value":1459.54,"pl":-40.46,"id":3,"paidIn":1500.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI Emerging Markets","short":"STXEMG","ticker":"JSE:STXEMG","value":2571.47,"pl":463.47,"id":4,"paidIn":2108.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI World","short":"STXWDM","ticker":"JSE:STXWDM","value":1571.08,"pl":97.61,"id":5,"paidIn":1473.47,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix S&P 500","short":"STX500","ticker":"JSE:STX500","value":7658.64,"pl":589.64,"id":6,"paidIn":7069.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Sygnia 4th Industrial Rev Global","short":"SYG4IR","ticker":"JSE:SYG4IR","value":3136.53,"pl":304.53,"id":7,"paidIn":2832.0,"basePrice":null,"syncedValue":null,"syncedAt":null}],"TFSA":[{"fund":"1nvest S&P500 Info Tech","short":"1nvest","ticker":null,"value":2330.97,"pl":338.56,"id":8,"paidIn":1992.41,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI Emerging Markets","short":"STXEMG","ticker":"JSE:STXEMG","value":1170.0,"pl":170.0,"id":9,"paidIn":1000.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI World","short":"STXWDM","ticker":"JSE:STXWDM","value":1120.84,"pl":91.84,"id":10,"paidIn":1029.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Sygnia 4th Industrial Rev Global","short":"SYG4IR","ticker":"JSE:SYG4IR","value":755.57,"pl":8.57,"id":11,"paidIn":747.0,"basePrice":null,"syncedValue":null,"syncedAt":null}]},"Mikayla":{"ZAR":[{"fund":"10X Total World","short":"10X","ticker":"JSE:GLOBAL","value":7004.36,"pl":360.86,"id":12,"paidIn":6643.5,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"1nvest S&P500 Info Tech","short":"1nvest","ticker":null,"value":5694.22,"pl":886.22,"id":13,"paidIn":4808.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI Emerging Markets","short":"STXEMG","ticker":"JSE:STXEMG","value":1422.18,"pl":172.18,"id":14,"paidIn":1250.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI World","short":"STXWDM","ticker":"JSE:STXWDM","value":5016.16,"pl":425.79,"id":15,"paidIn":4590.37,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix S&P 500","short":"STX500","ticker":"JSE:STX500","value":7182.24,"pl":538.84,"id":16,"paidIn":6643.4,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Sygnia 4th Industrial Rev Global","short":"SYG4IR","ticker":"JSE:SYG4IR","value":2597.47,"pl":230.67,"id":17,"paidIn":2366.8,"basePrice":null,"syncedValue":null,"syncedAt":null}],"TFSA":[{"fund":"1nvest S&P500 Info Tech","short":"1nvest","ticker":null,"value":2334.93,"pl":342.57,"id":18,"paidIn":1992.36,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI Emerging Markets","short":"STXEMG","ticker":"JSE:STXEMG","value":1170.45,"pl":170.45,"id":19,"paidIn":1000.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Satrix MSCI World","short":"STXWDM","ticker":"JSE:STXWDM","value":1125.16,"pl":97.16,"id":20,"paidIn":1028.0,"basePrice":null,"syncedValue":null,"syncedAt":null},{"fund":"Sygnia 4th Industrial Rev Global","short":"SYG4IR","ticker":"JSE:SYG4IR","value":755.98,"pl":8.58,"id":21,"paidIn":747.4,"basePrice":null,"syncedValue":null,"syncedAt":null}]}};
+
+const THEMES=[
+  {id:'midnight',name:'Midnight',c:'linear-gradient(135deg,#0a0e1a,#1a2744)'},
+  {id:'forest',name:'Forest',c:'linear-gradient(135deg,#0a1410,#16382a)'},
+  {id:'plum',name:'Plum',c:'linear-gradient(135deg,#120a1a,#3a1a52)'},
+  {id:'slate',name:'Slate',c:'linear-gradient(135deg,#0c0f14,#2a3340)'},
+  {id:'light',name:'Daylight',c:'linear-gradient(135deg,#eef2f8,#c7d6 ec)'},
+];
+
+let DATA=[];
+let filterType='all';
+let CUR='R';
+
+// ---- Storage ----
+function load(){
+  try{
+    const s=localStorage.getItem('bb_data');
+    DATA = s ? JSON.parse(s) : JSON.parse(JSON.stringify(SEED_DATA));
+  }catch(e){ DATA=JSON.parse(JSON.stringify(SEED_DATA)); }
+  CUR=localStorage.getItem('bb_cur')||'R';
+  const th=localStorage.getItem('bb_theme')||'midnight';
+  document.body.dataset.theme=th;
+  document.getElementById('currencySym').value=CUR;
+  // Brand (persisted)
+  const bLogo=localStorage.getItem('bb_logo')||'C&M';
+  const bTitle=localStorage.getItem('bb_title')||'C&M Future Fund';
+  const bSub=localStorage.getItem('bb_sub')||'University Fund';
+  document.getElementById('brandLogo').textContent=bLogo;
+  document.getElementById('brandTitle').textContent=bTitle;
+  document.getElementById('brandSub').textContent=bSub;
+  document.getElementById('setLogo').value=bLogo;
+  document.getElementById('setTitle').value=bTitle;
+  document.getElementById('setSub').value=bSub;
+  const gs=localStorage.getItem('bb_gsurl'); if(gs)document.getElementById('gsUrl').value=gs;
+}
+function save(){ localStorage.setItem('bb_data',JSON.stringify(DATA)); }
+
+// ---- Format ----
+function fmt(n){
+  n=Number(n)||0;
+  return CUR+' '+n.toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtShort(n){
+  n=Number(n)||0;
+  return CUR+' '+n.toLocaleString('en-ZA',{maximumFractionDigits:0});
+}
+function fmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'2-digit'});
+}
+function typeClass(t){
+  if(t==='Vehicle Profit')return 't-profit';
+  if(t==='Capital Withdrawal')return 't-withdrawal';
+  if(t==='Capital Repayment')return 't-repayment';
+  return 't-invest';
+}
+
+// ---- Calculations ----
+function calc(){
+  let profC=0,profM=0,allocC=0,allocM=0,spendC=0,spendM=0,sales=0;
+  let potTotal=0,deployed=0;
+  let etfC=0,etfM=0,tfsaC=0,tfsaM=0,bwC=0,bwM=0,cbC=0,cbM=0,invC=0,invM=0;
+
+  DATA.forEach(e=>{
+    if(e.type==='Vehicle Profit'){
+      const half=(Number(e.amount)||0)/2;
+      profC+=half; profM+=half; sales++;
+      allocC+=Number(e.cInv)||0; allocM+=Number(e.mInv)||0;
+      spendC+=Number(e.cSpend)||0; spendM+=Number(e.mSpend)||0;
+    }
+    if(e.type==='Capital Repayment') potTotal+=Number(e.amount)||0;
+    if(e.type==='Capital Withdrawal') deployed+=Number(e.amount)||0;
+    if(e.type==='Investment Deposit'){
+      const c=Number(e.cInv)||0, m=Number(e.mInv)||0;
+      invC+=c; invM+=m;
+      if(e.acct==='TFSA'){tfsaC+=c;tfsaM+=m;} else {etfC+=c;etfM+=m;}
+      if(e.source==='Carlos Bydrae'){cbC+=c;cbM+=m;} else {bwC+=c;bwM+=m;}
+    }
+  });
+  // capital repayments include both 'into pot' and 'capital back' — net deployed = withdrawn - capital back
+  // we treat all Capital Repayment as adding to pot total; deployed = total withdrawals minus repayments-back
+  // Simplify: available = potTotal - deployed (deployed already reduced by repayments via separate entries)
+  const avail = potTotal - deployed;
+  const remC = profC-allocC-spendC, remM=profM-allocM-spendM;
+  const capShare = avail/2; // each child's share of available pot
+  return {profC,profM,allocC,allocM,spendC,spendM,sales,potTotal,deployed,avail,
+          etfC,etfM,tfsaC,tfsaM,bwC,bwM,cbC,cbM,invC,invM,remC,remM,capShare,
+          grandC: capShare+remC+invC, grandM: capShare+remM+invM};
+}
+
+// ---- Render dashboard ----
+function renderDash(){
+  const k=calc();
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('d-conner-total',fmtShort(k.grandC)); set('d-mikayla-total',fmtShort(k.grandM));
+  set('d-conner-cap',fmt(k.capShare)); set('d-mikayla-cap',fmt(k.capShare));
+  set('d-conner-cash',fmt(k.remC)); set('d-mikayla-cash',fmt(k.remM));
+  set('d-conner-inv',fmt(k.invC)); set('d-mikayla-inv',fmt(k.invM));
+  set('d-pot-total',fmtShort(k.potTotal)); set('d-pot-deployed',fmtShort(k.deployed));
+  set('d-pot-avail',fmtShort(k.avail));
+  // fund bar
+  const tot=k.potTotal||1;
+  const depPct=Math.max(0,Math.min(100,k.deployed/tot*100));
+  document.getElementById('d-fund-bar').innerHTML=
+    `<i style="width:${depPct}%;background:var(--capital)"></i><i style="width:${100-depPct}%;background:var(--profit)"></i>`;
+  set('d-prof-c',fmt(k.profC)); set('d-prof-m',fmt(k.profM));
+  set('d-alloc-c',fmt(k.allocC)); set('d-alloc-m',fmt(k.allocM));
+  set('d-spend-c',fmt(k.spendC)); set('d-spend-m',fmt(k.spendM));
+  set('d-rem-c',fmt(k.remC)); set('d-rem-m',fmt(k.remM));
+  set('d-sales-count',k.sales);
+  set('d-etf-c',fmt(k.etfC)); set('d-etf-m',fmt(k.etfM));
+  set('d-tfsa-c',fmt(k.tfsaC)); set('d-tfsa-m',fmt(k.tfsaM));
+  set('d-inv-c',fmt(k.invC)); set('d-inv-m',fmt(k.invM));
+  // capital tab
+  set('c-total',fmtShort(k.potTotal)); set('c-deployed',fmtShort(k.deployed)); set('c-avail',fmtShort(k.avail));
+  // invest tab
+  set('i-etf-c',fmt(k.etfC)); set('i-etf-m',fmt(k.etfM));
+  set('i-tfsa-c',fmt(k.tfsaC)); set('i-tfsa-m',fmt(k.tfsaM));
+  set('i-bw-c',fmt(k.bwC)); set('i-bw-m',fmt(k.bwM));
+  set('i-cb-c',fmt(k.cbC)); set('i-cb-m',fmt(k.cbM));
+}
+
+// ---- Render history ----
+function entryHTML(e){
+  const tc=typeClass(e.type);
+  let splitHTML='';
+  if(e.type==='Vehicle Profit'){
+    const half=(Number(e.amount)||0)/2;
+    splitHTML=`<div class="entry-split">
+      <span class="es-c">Conner <b style="color:var(--conner)">${fmt(half)}</b></span>
+      <span class="es-m">Mikayla <b style="color:var(--mikayla)">${fmt(half)}</b></span></div>`;
+  } else if(e.type==='Investment Deposit'){
+    splitHTML=`<div class="entry-split">
+      <span class="es-c">Conner <b style="color:var(--conner)">${fmt(e.cInv)}</b></span>
+      <span class="es-m">Mikayla <b style="color:var(--mikayla)">${fmt(e.mInv)}</b></span></div>`;
+  }
+  const tags=[];
+  if(e.acct)tags.push(e.acct);
+  if(e.source)tags.push(e.source);
+  if(e.reg)tags.push(e.reg);
+  return `<div class="entry ${tc}">
+    <div class="entry-top">
+      <div style="min-width:0">
+        <div class="entry-desc">${esc(e.desc||'—')}</div>
+        <div class="entry-meta">
+          <span class="type-tag ${tc}">${e.type}</span>
+          <span>${fmtDate(e.date)}</span>
+          ${tags.map(t=>`<span>· ${esc(t)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="entry-amt">${e.type==='Capital Withdrawal'?'−':''}${fmt(e.type==='Investment Deposit'?((Number(e.cInv)||0)+(Number(e.mInv)||0)):e.amount)}</div>
+    </div>
+    ${e.notes?`<div class="entry-meta" style="margin-top:6px">📝 ${esc(e.notes)}</div>`:''}
+    ${splitHTML}
+    <div class="entry-actions">
+      <button class="mini-btn" onclick="editEntry(${e.id})">Edit</button>
+      <button class="mini-btn del" onclick="delEntry(${e.id})">Delete</button>
+    </div>
+  </div>`;
+}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function renderHistory(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  let list=[...DATA].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(filterType!=='all')list=list.filter(e=>e.type===filterType);
+  if(q)list=list.filter(e=>(e.desc+' '+e.reg+' '+e.notes+' '+e.type).toLowerCase().includes(q));
+  const el=document.getElementById('history-list');
+  el.innerHTML=list.length?list.map(entryHTML).join(''):'<div class="empty"><div class="ico">📭</div>No entries found</div>';
+}
+function renderCapital(){
+  let list=DATA.filter(e=>e.type==='Capital Withdrawal'||e.type==='Capital Repayment')
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('capital-list').innerHTML=
+    list.length?list.map(entryHTML).join(''):'<div class="empty"><div class="ico">💰</div>No capital movements</div>';
+}
+function renderInvest(){
+  let list=DATA.filter(e=>e.type==='Investment Deposit').sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('invest-list').innerHTML=
+    list.length?list.map(entryHTML).join(''):'<div class="empty"><div class="ico">📈</div>No investments yet</div>';
+}
+function renderAll(){renderDash();renderHistory();renderCapital();renderInvest();}
+
+// ---- Filter ----
+function setFilter(btn,f){
+  filterType=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+
+// ---- Form ----
+function onTypeChange(){
+  const t=document.getElementById('f-type').value;
+  const show=(id,b)=>document.getElementById(id).classList.toggle('show',b);
+  show('cond-split',t==='Vehicle Profit');
+  show('cond-alloc',t==='Vehicle Profit');
+  show('cond-invest',t==='Investment Deposit');
+  if(t==='Investment Deposit') populateEntryFundPickers();
+  const la=document.getElementById('lbl-amount');
+  const ld=document.getElementById('lbl-desc');
+  const lr=document.getElementById('lbl-reg');
+  document.getElementById('f-amount').parentElement.style.display=(t==='Investment Deposit')?'none':'flex';
+  if(t==='Vehicle Profit'){la.textContent='Profit Amount (R)';ld.textContent='Vehicle Sold';lr.textContent='Reg Number';}
+  else if(t==='Capital Withdrawal'){la.textContent='Amount Withdrawn (R)';ld.textContent='Vehicle Bought';lr.textContent='Reg Number';}
+  else if(t==='Capital Repayment'){la.textContent='Amount Returned (R)';ld.textContent='Description';lr.textContent='Reg (optional)';}
+  else {ld.textContent='Platform (EasyEquities / Satrix)';lr.textContent='—';}
+}
+function onAmountChange(){
+  const a=Number(document.getElementById('f-amount').value)||0;
+  document.getElementById('f-cshare').value=fmt(a/2);
+  document.getElementById('f-mshare').value=fmt(a/2);
+}
+function addEntry(){
+  const t=document.getElementById('f-type').value;
+  const date=document.getElementById('f-date').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!date){toast('Please pick a date','err');return;}
+  if(!desc){toast('Please add a description','err');return;}
+  const editId=document.getElementById('f-editid').value;
+
+  let e={
+    id: editId?Number(editId):Date.now(),
+    date, type:t, desc,
+    reg:document.getElementById('f-reg').value.trim(),
+    amount:0,cInv:0,cSpend:0,mInv:0,mSpend:0,acct:'',source:'',
+    notes:document.getElementById('f-notes').value.trim()
+  };
+  if(t==='Investment Deposit'){
+    e.cInv=Number(document.getElementById('f-cinv2').value)||0;
+    e.mInv=Number(document.getElementById('f-minv2').value)||0;
+    e.amount=e.cInv+e.mInv;
+    e.acct=document.getElementById('f-acct').value;
+    e.source=document.getElementById('f-source').value;
+    // Link to holdings funds (only on new entries, not edits, to avoid double-counting)
+    if(!editId){
+      const acctKey = e.acct==='TFSA'?'TFSA':'ZAR';
+      const cf=document.getElementById('f-cfund').value;
+      const mf=document.getElementById('f-mfund').value;
+      if(cf && e.cInv) applyDepositToFund('Conner',acctKey,cf,e.cInv);
+      if(mf && e.mInv) applyDepositToFund('Mikayla',acctKey,mf,e.mInv);
+      if(cf||mf){ saveHoldings(); renderHoldings(); }
+    }
+  } else {
+    e.amount=Number(document.getElementById('f-amount').value)||0;
+    if(t==='Vehicle Profit'){
+      e.cInv=Number(document.getElementById('f-cinv').value)||0;
+      e.cSpend=Number(document.getElementById('f-cspend').value)||0;
+      e.mInv=Number(document.getElementById('f-minv').value)||0;
+      e.mSpend=Number(document.getElementById('f-mspend').value)||0;
+    }
+  }
+  if(editId){
+    const i=DATA.findIndex(x=>x.id===Number(editId));
+    if(i>=0)DATA[i]=e;
+    toast('Entry updated','ok');
+  } else {
+    DATA.push(e);
+    toast('Entry added','ok');
+  }
+  save();renderAll();clearForm();
+  switchView('history');
+}
+function clearForm(){
+  document.getElementById('f-editid').value='';
+  document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-reg').value='';
+  document.getElementById('f-amount').value='';
+  ['f-cinv','f-cspend','f-minv','f-mspend','f-cinv2','f-minv2','f-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cshare').value='';
+  document.getElementById('f-mshare').value='';
+}
+function editEntry(id){
+  const e=DATA.find(x=>x.id===id); if(!e)return;
+  switchView('add');
+  document.getElementById('f-type').value=e.type;
+  onTypeChange();
+  document.getElementById('f-editid').value=e.id;
+  document.getElementById('f-date').value=e.date;
+  document.getElementById('f-desc').value=e.desc;
+  document.getElementById('f-reg').value=e.reg||'';
+  document.getElementById('f-amount').value=e.amount||'';
+  if(e.type==='Investment Deposit'){
+    document.getElementById('f-cinv2').value=e.cInv||'';
+    document.getElementById('f-minv2').value=e.mInv||'';
+    document.getElementById('f-acct').value=e.acct||'ETF';
+    document.getElementById('f-source').value=e.source||'Bakkie Winste';
+  } else if(e.type==='Vehicle Profit'){
+    document.getElementById('f-cinv').value=e.cInv||'';
+    document.getElementById('f-cspend').value=e.cSpend||'';
+    document.getElementById('f-minv').value=e.mInv||'';
+    document.getElementById('f-mspend').value=e.mSpend||'';
+    onAmountChange();
+  }
+  document.getElementById('f-notes').value=e.notes||'';
+  toast('Editing entry — change & press Add','ok');
+}
+function delEntry(id){
+  if(!confirm('Delete this entry? This cannot be undone.'))return;
+  DATA=DATA.filter(x=>x.id!==id);
+  save();renderAll();toast('Entry deleted','ok');
+}
+
+// ---- View switching ----
+function switchView(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id===v));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchView(t.dataset.view));
+
+// ---- Modals ----
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// ---- Themes ----
+function renderThemes(){
+  const cur=document.body.dataset.theme;
+  document.getElementById('themeGrid').innerHTML=THEMES.map(t=>
+    `<div class="theme-swatch ${t.id===cur?'active':''}" style="background:${t.c}" onclick="setTheme('${t.id}')"><span>${t.name}</span></div>`
+  ).join('');
+}
+function setTheme(id){
+  document.body.dataset.theme=id;
+  localStorage.setItem('bb_theme',id);
+  renderThemes();
+}
+function setCurrency(){
+  CUR=document.getElementById('currencySym').value||'R';
+  localStorage.setItem('bb_cur',CUR);
+  renderAll();
+}
+function setBrand(){
+  const logo=document.getElementById('setLogo').value.trim()||'C&M';
+  const title=document.getElementById('setTitle').value.trim()||'Bargain Bakkies';
+  const sub=document.getElementById('setSub').value.trim()||'Conner & Mikayla';
+  localStorage.setItem('bb_logo',logo);
+  localStorage.setItem('bb_title',title);
+  localStorage.setItem('bb_sub',sub);
+  document.getElementById('brandLogo').textContent=logo;
+  document.getElementById('brandTitle').textContent=title;
+  document.getElementById('brandSub').textContent=sub;
+  toast('Saved','ok');
+}
+
+// ---- Backup ----
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:'BargainBakkiesFund',version:2,exported:new Date().toISOString(),data:DATA,holdings:HOLDINGS,cash:CASH},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='bargain-bakkies-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('Backup downloaded','ok');
+}
+function importData(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const j=JSON.parse(r.result);
+      const arr=Array.isArray(j)?j:j.data;
+      if(!Array.isArray(arr))throw 'bad';
+      if(!confirm('Import '+arr.length+' entries? This replaces current data.'))return;
+      DATA=arr;
+      if(j.holdings){ HOLDINGS=j.holdings; saveHoldings(); }
+      if(j.cash){ CASH=j.cash; saveCash(); }
+      renderHoldings();
+      save(); renderAll(); closeModal('dataModal');
+      toast('Imported '+arr.length+' entries','ok');
+    }catch(e){toast('Invalid backup file','err');}
+  };
+  r.readAsText(f);
+  ev.target.value='';
+}
+function exportCSV(){
+  const hdr=['Date','Type','Description','Reg','Amount','Conner_Invest','Conner_Spend','Mikayla_Invest','Mikayla_Spend','Account','Source','Notes'];
+  const rows=DATA.map(e=>[e.date,e.type,e.desc,e.reg,e.amount,e.cInv,e.cSpend,e.mInv,e.mSpend,e.acct,e.source,e.notes]
+    .map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(','));
+  const blob=new Blob([hdr.join(',')+'\n'+rows.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='bargain-bakkies-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('CSV downloaded','ok');
+}
+function resetData(){
+  if(!confirm('Reset everything to original historical data? Export a backup first if unsure.'))return;
+  DATA=JSON.parse(JSON.stringify(SEED_DATA));save();
+  HOLDINGS=JSON.parse(JSON.stringify(HOLDINGS_SEED));saveHoldings();renderHoldings();
+  renderAll();closeModal('dataModal');
+  toast('Data reset','ok');
+}
+function saveGsUrl(){
+  const u=document.getElementById('gsUrl').value.trim();
+  localStorage.setItem('bb_gsurl',u);toast('Sync URL saved','ok');
+}
+function syncToSheets(){
+  const u=localStorage.getItem('bb_gsurl');
+  if(!u){toast('Save your Apps Script URL first','err');return;}
+  fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(DATA)})
+    .then(()=>toast('Sent to Google Sheets','ok'))
+    .catch(()=>toast('Sync failed — check URL','err'));
+}
+
+// ==== HOLDINGS ====
+let HOLDINGS={};
+let CASH={}; // "Child|Acct" -> amount uninvested
+let holdChild='Conner', holdAcct='ZAR';
+let curFund=null, curRange=90;
+let PRICES={}; // ticker -> {price, prevClose, history:[{t,v}]}
+
+function loadHoldings(){
+  try{
+    const s=localStorage.getItem('bb_holdings');
+    HOLDINGS = s?JSON.parse(s):JSON.parse(JSON.stringify(HOLDINGS_SEED));
+  }catch(e){ HOLDINGS=JSON.parse(JSON.stringify(HOLDINGS_SEED)); }
+  try{ PRICES=JSON.parse(localStorage.getItem('bb_prices')||'{}'); }catch(e){ PRICES={}; }
+  try{ CASH=JSON.parse(localStorage.getItem('bb_cash')||'{}'); }catch(e){ CASH={}; }
+}
+function saveHoldings(){ localStorage.setItem('bb_holdings',JSON.stringify(HOLDINGS)); }
+function saveCash(){ localStorage.setItem('bb_cash',JSON.stringify(CASH)); }
+function cashKey(){ return holdChild+'|'+holdAcct; }
+function getCash(){ return Number(CASH[cashKey()])||0; }
+
+function setHoldChild(c){
+  holdChild=c;
+  document.querySelectorAll('#childSeg .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.child===c));
+  renderHoldings();
+}
+function setHoldAcct(a){
+  holdAcct=a;
+  document.querySelectorAll('#acctSeg .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.acct===a));
+  renderHoldings();
+}
+
+// Apply latest price to a fund if we have ticker data
+function fundCurrent(f){
+  // Returns {value, pl, plpct, dayPct, live, paidIn}
+  const paidIn = Number(f.paidIn)||0;
+  let value = Number(f.value)||0;   // last known/captured value
+  let dayPct=null, live=false;
+
+  // 1) If user pasted an exact EasyEquities value, that wins
+  if(f.syncedValue!=null && !isNaN(f.syncedValue)){
+    value = Number(f.syncedValue);
+  }
+  // 2) Else if we have a live price + a base price, grow captured value by price move
+  else if(f.ticker && PRICES[f.ticker] && PRICES[f.ticker].price){
+    const p=PRICES[f.ticker];
+    const base = f.basePrice && f.basePrice>0 ? f.basePrice : null;
+    if(base){ value = (Number(f.value)||0) * (p.price/base); }
+    live=true;
+  }
+  // daily % from live price regardless
+  if(f.ticker && PRICES[f.ticker] && PRICES[f.ticker].price && PRICES[f.ticker].prevClose){
+    const p=PRICES[f.ticker];
+    dayPct = (p.price - p.prevClose)/p.prevClose*100;
+    live=true;
+  }
+  const pl = value - paidIn;
+  const plpct = paidIn>0 ? (pl/paidIn*100) : 0;
+  return {value,pl,plpct,dayPct,live,paidIn};
+}
+
+function renderHoldings(){
+  const funds=(HOLDINGS[holdChild] && HOLDINGS[holdChild][holdAcct])||[];
+  const list=document.getElementById('hold-list');
+  const cash=getCash();
+  let totV=0, totPL=0;
+
+  // Cash card always shows (tap to edit)
+  const cashCard=`<div class="hold-card cash-card" onclick="openCash()">
+      <div class="hc-badge" style="background:var(--capital-bg);color:var(--capital)">CASH</div>
+      <div class="hc-mid">
+        <div class="hc-name">Cash / Uninvested</div>
+        <div class="hc-tick">${cash>0?'tap to update':'tap to add wallet cash'}</div>
+      </div>
+      <div class="hc-right"><div class="hc-val">${fmt(cash)}</div></div>
+      <div class="hc-arrow">›</div>
+    </div>`;
+
+  if(!funds.length){
+    list.innerHTML=cashCard+'<div class="empty"><div class="ico">📊</div>No funds yet for '+holdChild+' · '+holdAcct+
+      '<div class="note-line" style="margin-top:10px">Tap ＋ Add Fund to create one.</div></div>';
+    document.getElementById('hold-total').textContent=fmt(cash);
+    const plEl0=document.getElementById('hold-pl');
+    plEl0.textContent=fmt(0); plEl0.style.color='var(--txt)';
+    return;
+  }
+  const cards=funds.map((f,i)=>{
+    const c=fundCurrent(f);
+    totV+=c.value; totPL+=c.pl;
+    const up=c.pl>=0;
+    const day = c.dayPct!=null ? `<span class="hc-pl ${c.dayPct>=0?'up':'down'}" style="font-size:11px">${c.dayPct>=0?'▲':'▼'} ${Math.abs(c.dayPct).toFixed(2)}% today</span>` : '';
+    return `<div class="hold-card" onclick="openFund(${i})">
+      <div class="hc-badge">${esc(f.short||'ETF')}</div>
+      <div class="hc-mid">
+        <div class="hc-name">${esc(f.fund)}</div>
+        <div class="hc-tick">${f.ticker?esc(f.ticker)+(c.live?' · live':''):'manual'}</div>
+      </div>
+      <div class="hc-right">
+        <div class="hc-val">${fmt(c.value)}</div>
+        <div class="hc-pl ${up?'up':'down'}">${up?'+':''}${fmt(c.pl)} (${up?'+':''}${c.plpct.toFixed(2)}%)</div>
+        ${day}
+      </div>
+      <div class="hc-arrow">›</div>
+    </div>`;
+  }).join('');
+  list.innerHTML=cards+cashCard;
+
+  const portfolioVal=totV+cash;
+  document.getElementById('hold-total').textContent=fmt(portfolioVal);
+  const plEl=document.getElementById('hold-pl');
+  plEl.textContent=(totPL>=0?'+':'')+fmt(totPL);
+  plEl.style.color = totPL>=0?'var(--profit)':'var(--danger)';
+}
+
+function openCash(){
+  const v=getCash();
+  const inp=prompt('Uninvested cash in '+holdChild+' · '+(holdAcct==='ZAR'?'EasyEquities ZAR':'TFSA')+' (R):', v||'');
+  if(inp===null)return;
+  const amt=Number(inp);
+  if(isNaN(amt)){toast('Enter a number','err');return;}
+  CASH[cashKey()]=amt; saveCash(); renderHoldings();
+  toast('Cash updated','ok');
+}
+
+// ---- Fund detail + chart ----
+function openFund(i){
+  const funds=HOLDINGS[holdChild][holdAcct];
+  curFund=funds[i];
+  const c=fundCurrent(curFund);
+  document.getElementById('fm-name').textContent=curFund.fund;
+  document.getElementById('fm-sub').textContent=`${holdChild} · ${holdAcct}${curFund.ticker?' · '+curFund.ticker:''}`;
+  document.getElementById('fm-value').textContent=fmt(c.value);
+  const plE=document.getElementById('fm-pl');
+  plE.textContent=(c.pl>=0?'+':'')+fmt(c.pl);
+  plE.className='v '+(c.pl>=0?'up':'down');
+  const dayE=document.getElementById('fm-day');
+  if(c.dayPct!=null){dayE.textContent=(c.dayPct>=0?'+':'')+c.dayPct.toFixed(2)+'%';dayE.className='v '+(c.dayPct>=0?'up':'down');}
+  else{dayE.textContent='—';dayE.className='v';}
+  document.getElementById('fm-note').textContent = curFund.ticker
+    ? 'Graph uses price history synced from your Google Sheet. Refresh prices to update.'
+    : 'No ticker linked — showing your captured value as a flat line. Link a JSE ticker to track this fund live.';
+  openModal('fundModal');
+  curRange=90;
+  document.querySelectorAll('#rangeSeg .range-btn').forEach(b=>b.classList.toggle('active',b.dataset.r==='90'));
+  requestAnimationFrame(()=>drawChart());
+}
+function setRange(r,btn){
+  curRange=r;
+  document.querySelectorAll('#rangeSeg .range-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawChart();
+}
+
+// High-resolution canvas line chart
+function drawChart(){
+  const canvas=document.getElementById('fundChart');
+  const wrap=canvas.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  const W=wrap.clientWidth-20, H=wrap.clientHeight-20;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  // Build series
+  let hist=[];
+  if(curFund.ticker && PRICES[curFund.ticker] && PRICES[curFund.ticker].history && PRICES[curFund.ticker].history.length>1){
+    const p=PRICES[curFund.ticker];
+    const base=curFund.basePrice||p.history[0].v;
+    hist=p.history.map(pt=>({t:pt.t, v:curFund.value*(pt.v/base)}));
+  } else {
+    // synth flat-ish line around captured value so chart isn't empty
+    const today=Date.now(), day=86400000;
+    const n=curRange||365;
+    for(let i=n;i>=0;i--) hist.push({t:today-i*day, v:curFund.value});
+  }
+  // Filter by range
+  if(curRange>0){
+    const cutoff=Date.now()-curRange*86400000;
+    const f=hist.filter(p=>p.t>=cutoff);
+    if(f.length>1) hist=f;
+  }
+  if(hist.length<2){ hist=[{t:Date.now()-86400000,v:curFund.value},{t:Date.now(),v:curFund.value}]; }
+
+  const vals=hist.map(p=>p.v);
+  let mn=Math.min(...vals), mx=Math.max(...vals);
+  if(mn===mx){mn=mn*0.98;mx=mx*1.02;}
+  const pad=(mx-mn)*0.12; mn-=pad; mx+=pad;
+  const padL=8, padR=8, padT=12, padB=22;
+  const cw=W-padL-padR, ch=H-padT-padB;
+  const x=i=>padL+(i/(hist.length-1))*cw;
+  const y=v=>padT+ch-((v-mn)/(mx-mn))*ch;
+
+  const up = vals[vals.length-1]>=vals[0];
+  const col = up?getCss('--profit'):getCss('--danger');
+
+  // grid lines
+  ctx.strokeStyle=getCss('--border'); ctx.lineWidth=1;
+  ctx.font='10px '+getCss('--font').replace(/'/g,'');
+  ctx.fillStyle=getCss('--txt-faint');
+  for(let g=0;g<=3;g++){
+    const gy=padT+(ch/3)*g;
+    ctx.beginPath();ctx.moveTo(padL,gy);ctx.lineTo(W-padR,gy);ctx.stroke();
+    const gv=mx-((mx-mn)/3)*g;
+    ctx.fillText(CUR+' '+Math.round(gv).toLocaleString('en-ZA'),padL+2,gy-3);
+  }
+
+  // area fill
+  const grad=ctx.createLinearGradient(0,padT,0,padT+ch);
+  grad.addColorStop(0, col+'55'); grad.addColorStop(1, col+'00');
+  ctx.beginPath();
+  ctx.moveTo(x(0),y(vals[0]));
+  hist.forEach((p,i)=>ctx.lineTo(x(i),y(p.v)));
+  ctx.lineTo(x(hist.length-1),padT+ch);
+  ctx.lineTo(x(0),padT+ch);
+  ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+
+  // line
+  ctx.beginPath();
+  ctx.moveTo(x(0),y(vals[0]));
+  hist.forEach((p,i)=>ctx.lineTo(x(i),y(p.v)));
+  ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.lineJoin='round'; ctx.stroke();
+
+  // end dot
+  ctx.beginPath();
+  ctx.arc(x(hist.length-1),y(vals[vals.length-1]),4,0,Math.PI*2);
+  ctx.fillStyle=col; ctx.fill();
+  ctx.strokeStyle=getCss('--bg2'); ctx.lineWidth=2; ctx.stroke();
+}
+function getCss(v){return getComputedStyle(document.body).getPropertyValue(v).trim();}
+
+// ---- Add Fund ----
+function populateEntryFundPickers(){
+  // ETF account in entry -> ZAR holdings; TFSA -> TFSA holdings
+  const acctSel=document.getElementById('f-acct').value;
+  const holdAcctKey = acctSel==='TFSA' ? 'TFSA' : 'ZAR';
+  ['Conner','Mikayla'].forEach(child=>{
+    const sel=document.getElementById(child==='Conner'?'f-cfund':'f-mfund');
+    if(!sel)return;
+    const prev=sel.value;
+    const funds=(HOLDINGS[child] && HOLDINGS[child][holdAcctKey])||[];
+    sel.innerHTML='<option value="">— don\'t link —</option>'+
+      funds.map(f=>`<option value="${f.id}">${esc(f.fund)}</option>`).join('');
+    if(prev)sel.value=prev;
+  });
+}
+function applyDepositToFund(child, acctKey, fundId, amount){
+  if(!fundId||!amount)return;
+  const arr=(HOLDINGS[child] && HOLDINGS[child][acctKey])||[];
+  const f=arr.find(x=>String(x.id)===String(fundId));
+  if(!f)return;
+  f.paidIn=(Number(f.paidIn)||0)+amount;
+  f.value=(Number(f.value)||0)+amount;
+  if(f.syncedValue!=null) f.syncedValue=Number(f.syncedValue)+amount;
+}
+function shortFromTicker(t){
+  if(!t)return 'ETF';
+  return t.replace('JSE:','').slice(0,7);
+}
+function openAddFund(){
+  document.getElementById('af-context').textContent=`Adding to ${holdChild} · ${holdAcct==='ZAR'?'EasyEquities ZAR':'TFSA'}`;
+  document.getElementById('af-name').value='';
+  document.getElementById('af-short').value='';
+  document.getElementById('af-ticker').value='';
+  document.getElementById('af-paid').value='';
+  document.getElementById('af-tickernote').textContent='';
+  openModal('addFundModal');
+}
+function saveNewFund(){
+  const name=document.getElementById('af-name').value.trim();
+  if(!name){toast('Enter a fund name','err');return;}
+  let ticker=document.getElementById('af-ticker').value.trim();
+  if(ticker && !ticker.includes(':')) ticker='JSE:'+ticker.toUpperCase();
+  const short=document.getElementById('af-short').value.trim()||shortFromTicker(ticker);
+  const paid=Number(document.getElementById('af-paid').value)||0;
+  const newFund={
+    id:Date.now(), fund:name, short:short, ticker:ticker||null,
+    value:paid, pl:0, paidIn:paid, basePrice:null, syncedValue:null, syncedAt:null
+  };
+  if(!HOLDINGS[holdChild]) HOLDINGS[holdChild]={ZAR:[],TFSA:[]};
+  if(!HOLDINGS[holdChild][holdAcct]) HOLDINGS[holdChild][holdAcct]=[];
+  HOLDINGS[holdChild][holdAcct].push(newFund);
+  saveHoldings(); renderHoldings(); closeModal('addFundModal');
+  if(ticker){
+    toast('Fund added — add its ticker to your sheet','ok');
+    setTimeout(()=>alert('To track '+name+' live, add this row to the "Prices" tab of your Google Sheet:\n\n'+
+      ticker+'\t=GOOGLEFINANCE("'+ticker+'","price")\t=GOOGLEFINANCE("'+ticker+'","closeyest")'),300);
+  } else {
+    toast('Fund added (manual value)','ok');
+  }
+}
+
+// ---- Deposit / Top-up ----
+let depTopUpFund=null; // when topping up a specific fund
+function openDeposit(){
+  depTopUpFund=null;
+  document.getElementById('dep-title').textContent='Add Deposit to Fund';
+  document.getElementById('dep-pickers').style.display='block';
+  document.getElementById('dep-child').value=holdChild;
+  document.getElementById('dep-acct').value=holdAcct;
+  document.getElementById('dep-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('dep-amount').value='';
+  depRefreshFunds();
+  openModal('depositModal');
+}
+function openTopUp(){
+  if(!curFund)return;
+  depTopUpFund=curFund;
+  closeModal('fundModal');
+  document.getElementById('dep-title').textContent='Top up '+curFund.fund;
+  document.getElementById('dep-pickers').style.display='none';
+  document.getElementById('dep-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('dep-amount').value='';
+  openModal('depositModal');
+}
+function depRefreshFunds(){
+  const child=document.getElementById('dep-child').value;
+  const acct=document.getElementById('dep-acct').value;
+  const funds=(HOLDINGS[child] && HOLDINGS[child][acct])||[];
+  const sel=document.getElementById('dep-fund');
+  sel.innerHTML = funds.length
+    ? funds.map((f,i)=>`<option value="${i}">${esc(f.fund)}</option>`).join('')
+    : '<option value="-1">No funds yet — add one first</option>';
+}
+function saveDeposit(){
+  const amt=Number(document.getElementById('dep-amount').value)||0;
+  if(amt<=0){toast('Enter an amount','err');return;}
+  const dt=document.getElementById('dep-date').value;
+  let fund;
+  if(depTopUpFund){ fund=depTopUpFund; }
+  else {
+    const child=document.getElementById('dep-child').value;
+    const acct=document.getElementById('dep-acct').value;
+    const idx=Number(document.getElementById('dep-fund').value);
+    if(idx<0){toast('Add a fund first','err');return;}
+    fund=HOLDINGS[child][acct][idx];
+  }
+  // increase cost basis AND current value by the deposit (cash just went in)
+  fund.paidIn=(Number(fund.paidIn)||0)+amt;
+  fund.value=(Number(fund.value)||0)+amt;
+  // if a synced value exists, bump it too (you added cash to the account)
+  if(fund.syncedValue!=null) fund.syncedValue=Number(fund.syncedValue)+amt;
+  saveHoldings(); renderHoldings(); closeModal('depositModal');
+  toast(fmt(amt)+' added to '+fund.fund,'ok');
+}
+
+// ---- Sync exact value ----
+function openSyncValue(){
+  if(!curFund)return;
+  const c=fundCurrent(curFund);
+  document.getElementById('sv-value').value = curFund.syncedValue!=null?curFund.syncedValue:c.value.toFixed(2);
+  closeModal('fundModal');
+  openModal('syncValModal');
+}
+function saveSyncValue(){
+  const v=Number(document.getElementById('sv-value').value);
+  if(isNaN(v)){toast('Enter a value','err');return;}
+  curFund.syncedValue=v; curFund.syncedAt=new Date().toISOString();
+  curFund.value=v;
+  saveHoldings(); renderHoldings(); closeModal('syncValModal');
+  toast('Value synced','ok');
+}
+function clearSyncValue(){
+  if(!curFund)return;
+  curFund.syncedValue=null; curFund.syncedAt=null;
+  saveHoldings(); renderHoldings(); closeModal('syncValModal');
+  toast('Back to live price tracking','ok');
+}
+
+// ---- Delete fund ----
+function deleteFund(){
+  if(!curFund)return;
+  if(!confirm('Delete '+curFund.fund+'? This removes it from holdings.'))return;
+  const arr=HOLDINGS[holdChild][holdAcct];
+  const i=arr.findIndex(f=>f===curFund || f.id===curFund.id);
+  if(i>=0)arr.splice(i,1);
+  saveHoldings(); renderHoldings(); closeModal('fundModal');
+  toast('Fund deleted','ok');
+}
+
+// ---- Price refresh from Google Sheet ----
+function refreshPrices(){
+  const u=localStorage.getItem('bb_priceurl')||localStorage.getItem('bb_gsurl');
+  if(!u){ toast('Set your price sheet URL in Backup first','err'); return; }
+  document.getElementById('hold-sync-state').textContent='Updating prices…';
+  fetch(u+(u.includes('?')?'&':'?')+'action=prices')
+    .then(r=>r.json())
+    .then(d=>{
+      PRICES=d; localStorage.setItem('bb_prices',JSON.stringify(d));
+      localStorage.setItem('bb_pricetime',Date.now());
+      // Set basePrice for any fund that has a live ticker but no base yet
+      // (captures "today's price" as the reference for the captured value)
+      let changed=false;
+      Object.values(HOLDINGS).forEach(accts=>Object.values(accts).forEach(arr=>arr.forEach(f=>{
+        if(f.ticker && PRICES[f.ticker] && PRICES[f.ticker].price && !f.basePrice){
+          f.basePrice=PRICES[f.ticker].price; changed=true;
+        }
+      })));
+      if(changed) saveHoldings();
+      document.getElementById('hold-sync-state').textContent='Prices updated '+new Date().toLocaleString('en-ZA');
+      renderHoldings(); toast('Prices updated','ok');
+    })
+    .catch(()=>{ document.getElementById('hold-sync-state').textContent='Could not reach price sheet'; toast('Price update failed','err'); });
+}
+
+window.addEventListener('resize',()=>{ if(document.getElementById('fundModal').classList.contains('show')) drawChart(); });
+
+// ---- Toast ----
+let toastT;
+function toast(msg,kind='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+kind+' show';
+  clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast '+kind,2400);
+}
+
+// ---- Init ----
+load();
+loadHoldings();
+document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+onTypeChange();renderThemes();renderAll();renderHoldings();
+
+// ---- PWA: service worker + install prompt ----
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const btn=document.getElementById('installBtn');
+  if(btn) btn.style.display='inline-flex';
+});
+function installApp(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(()=>{ deferredInstallPrompt=null; });
+  } else {
+    toast('Use your browser menu → Add to Home Screen','ok');
+  }
+}
+window.addEventListener('appinstalled',()=>{ toast('App installed!','ok'); });
+
+</script>
+</body>
+</html>
