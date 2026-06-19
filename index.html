@@ -301,6 +301,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
     <button class="tab" data-view="history">History</button>
     <button class="tab" data-view="capital">Capital Pot</button>
     <button class="tab" data-view="invest">Investments</button>
+    <button class="tab" data-view="tfsa">TFSA</button>
     <button class="tab" data-view="holdings">Holdings</button>
   </div>
 </header>
@@ -311,22 +312,24 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
     <div class="grand-grid">
       <div class="grand-card conner">
         <div class="who">CONNER</div>
-        <div class="label">Grand Total</div>
+        <div class="label">Grand Total (excl. TFSA)</div>
         <div class="total" id="d-conner-total">R0</div>
         <div class="sub">
           Capital: <b id="d-conner-cap">R0</b><br>
           Cash profit: <b id="d-conner-cash">R0</b><br>
-          Investments: <b id="d-conner-inv">R0</b>
+          ETF investments: <b id="d-conner-inv">R0</b><br>
+          TFSA (separate): <b id="d-conner-tfsa">R0</b>
         </div>
       </div>
       <div class="grand-card mikayla">
         <div class="who">MIKAYLA</div>
-        <div class="label">Grand Total</div>
+        <div class="label">Grand Total (excl. TFSA)</div>
         <div class="total" id="d-mikayla-total">R0</div>
         <div class="sub">
           Capital: <b id="d-mikayla-cap">R0</b><br>
           Cash profit: <b id="d-mikayla-cash">R0</b><br>
-          Investments: <b id="d-mikayla-inv">R0</b>
+          ETF investments: <b id="d-mikayla-inv">R0</b><br>
+          TFSA (separate): <b id="d-mikayla-tfsa">R0</b>
         </div>
       </div>
     </div>
@@ -334,9 +337,18 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
     <div class="card" style="--accent:var(--capital)">
       <div class="section-title" style="--accent:var(--capital)">Capital Pot</div>
       <div class="stat-grid">
-        <div class="stat capital"><div class="k">Total in pot</div><div class="v" id="d-pot-total">R0</div></div>
-        <div class="stat"><div class="k">Deployed in vehicles</div><div class="v sm" id="d-pot-deployed">R0</div></div>
-        <div class="stat profit"><div class="k">Cash available</div><div class="v" id="d-pot-avail">R0</div></div>
+        <div class="stat capital" style="cursor:pointer" onclick="editCapital('total')" title="Tap to edit">
+          <div class="k">Total in pot <span style="font-size:9px;opacity:0.6">✎</span></div>
+          <div class="v" id="d-pot-total">R0</div>
+        </div>
+        <div class="stat" style="cursor:pointer" onclick="editCapital('deployed')" title="Tap to edit">
+          <div class="k">Deployed <span style="font-size:9px;opacity:0.6">✎</span></div>
+          <div class="v sm" id="d-pot-deployed">R0</div>
+        </div>
+        <div class="stat profit" style="cursor:pointer" onclick="editCapital('avail')" title="Auto = Total − Deployed">
+          <div class="k">Available <span style="font-size:9px;opacity:0.5">auto</span></div>
+          <div class="v" id="d-pot-avail">R0</div>
+        </div>
       </div>
       <div class="fund-bar" id="d-fund-bar"></div>
       <div class="note-line">Bar shows how much of the pot is currently out in vehicles (amber) vs available cash (green).</div>
@@ -359,11 +371,9 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
       <div class="section-title" style="--accent:var(--invest)">Investments (purchase cost)</div>
       <div class="split-row"><span class="lbl">ETF total</span>
         <div class="split-vals"><span class="cv" id="d-etf-c">R0</span><span class="mv" id="d-etf-m">R0</span></div></div>
-      <div class="split-row"><span class="lbl">TFSA total</span>
-        <div class="split-vals"><span class="cv" id="d-tfsa-c">R0</span><span class="mv" id="d-tfsa-m">R0</span></div></div>
-      <div class="split-row"><span class="lbl">Total invested</span>
+      <div class="split-row"><span class="lbl">Total invested (ETF only)</span>
         <div class="split-vals"><span class="cv" id="d-inv-c">R0</span><span class="mv" id="d-inv-m">R0</span></div></div>
-      <div class="disclaimer">⚠ Investment values are purchase cost only. Actual account balances will be higher due to market growth.</div>
+      <div class="disclaimer">⚠ ETF values = purchase cost only. Actual balances higher due to growth. TFSA tracked separately — see TFSA tab.</div>
     </div>
   </section>
 
@@ -485,29 +495,55 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
   <section class="view" id="capital">
     <div class="card" style="--accent:var(--capital)">
       <div class="section-title" style="--accent:var(--capital)">Capital Pot — Running Balance</div>
+      <div class="note-line" style="margin-bottom:12px">Tap any value to correct it manually. Changes save instantly and update the dashboard bar.</div>
       <div class="stat-grid">
-        <div class="stat capital"><div class="k">Total in pot</div><div class="v sm" id="c-total">R0</div></div>
-        <div class="stat"><div class="k">Deployed</div><div class="v sm" id="c-deployed">R0</div></div>
-        <div class="stat profit"><div class="k">Available</div><div class="v sm" id="c-avail">R0</div></div>
+        <div class="stat capital" style="cursor:pointer" onclick="editCapital('total')" title="Tap to edit">
+          <div class="k">Total in pot ✎</div><div class="v sm" id="c-total">R0</div></div>
+        <div class="stat" style="cursor:pointer" onclick="editCapital('deployed')" title="Tap to edit">
+          <div class="k">Deployed ✎</div><div class="v sm" id="c-deployed">R0</div></div>
+        <div class="stat profit">
+          <div class="k">Available (auto)</div><div class="v sm" id="c-avail">R0</div></div>
       </div>
     </div>
     <div class="entry-list" id="capital-list"></div>
   </section>
 
-  <!-- INVESTMENTS -->
+  <!-- INVESTMENTS (ETF only) -->
   <section class="view" id="invest">
     <div class="card" style="--accent:var(--invest)">
-      <div class="section-title" style="--accent:var(--invest)">Investment Totals</div>
-      <div class="split-row"><span class="lbl">ETF (both kids)</span>
+      <div class="section-title" style="--accent:var(--invest)">ETF Investment Totals</div>
+      <div class="split-row"><span class="lbl">ETF total (both kids)</span>
         <div class="split-vals"><span class="cv" id="i-etf-c">R0</span><span class="mv" id="i-etf-m">R0</span></div></div>
-      <div class="split-row"><span class="lbl">TFSA (both kids)</span>
-        <div class="split-vals"><span class="cv" id="i-tfsa-c">R0</span><span class="mv" id="i-tfsa-m">R0</span></div></div>
       <div class="split-row"><span class="lbl">From Bakkie Winste</span>
         <div class="split-vals"><span class="cv" id="i-bw-c">R0</span><span class="mv" id="i-bw-m">R0</span></div></div>
       <div class="split-row"><span class="lbl">From Carlos Bydrae</span>
         <div class="split-vals"><span class="cv" id="i-cb-c">R0</span><span class="mv" id="i-cb-m">R0</span></div></div>
+      <div class="disclaimer">TFSA shown separately — see TFSA tab. It grows and is tracked but is not counted in liquid investment totals.</div>
     </div>
     <div class="entry-list" id="invest-list"></div>
+  </section>
+
+  <!-- TFSA (dedicated tab) -->
+  <section class="view" id="tfsa">
+    <div class="card" style="--accent:var(--mikayla)">
+      <div class="section-title" style="--accent:var(--mikayla)">TFSA — Tax-Free Savings Accounts</div>
+      <div class="note-line" style="margin-bottom:14px">TFSA grows and is tracked here. It is <b>not</b> included in liquid totals or the Grand Total — it is a long-term vehicle that cannot be withdrawn in the same way as capital or ETF investments.</div>
+      <div class="split-row"><span class="lbl">Total paid in (all time)</span>
+        <div class="split-vals"><span class="cv" id="t-total-c">R0</span><span class="mv" id="t-total-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">Current holding value</span>
+        <div class="split-vals"><span class="cv" id="t-value-c">R0</span><span class="mv" id="t-value-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">Growth (value − paid in)</span>
+        <div class="split-vals"><span class="cv" id="t-growth-c">R0</span><span class="mv" id="t-growth-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">From Bakkie Winste</span>
+        <div class="split-vals"><span class="cv" id="t-bw-c">R0</span><span class="mv" id="t-bw-m">R0</span></div></div>
+      <div class="split-row"><span class="lbl">From Carlos Bydrae</span>
+        <div class="split-vals"><span class="cv" id="t-cb-c">R0</span><span class="mv" id="t-cb-m">R0</span></div></div>
+    </div>
+    <div class="section-title" style="--accent:var(--conner);margin-top:14px">Conner — TFSA Holdings</div>
+    <div class="entry-list" id="tfsa-list-c"></div>
+    <div class="section-title" style="--accent:var(--mikayla);margin-top:14px">Mikayla — TFSA Holdings</div>
+    <div class="entry-list" id="tfsa-list-m"></div>
+    <div class="note-line" style="padding:4px">Tap a TFSA fund in Holdings → TFSA account to top it up or sync its exact value.</div>
   </section>
 
   <!-- HOLDINGS -->
@@ -705,28 +741,37 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.6);}
 <div class="modal-bg" id="settingsModal" onclick="if(event.target===this)closeModal('settingsModal')">
   <div class="modal">
     <h3>Customize</h3>
-    <p class="modal-sub">All changes save automatically and stay set.</p>
+    <p class="modal-sub">Edit anything below, then tap Save.</p>
     <div class="theme-grid" id="themeGrid"></div>
     <div class="field full" style="margin-bottom:10px">
       <label>Icon text</label>
-      <input type="text" id="setLogo" maxlength="4" placeholder="C&amp;M" onchange="setBrand()">
+      <input type="text" id="setLogo" maxlength="4" placeholder="C&amp;M">
     </div>
     <div class="field full" style="margin-bottom:10px">
       <label>Title</label>
-      <input type="text" id="setTitle" maxlength="40" placeholder="Bargain Bakkies" onchange="setBrand()">
+      <input type="text" id="setTitle" maxlength="40" placeholder="C&amp;M Future Fund">
     </div>
-    <div class="field full" style="margin-bottom:6px">
+    <div class="field full" style="margin-bottom:10px">
       <label>Subtitle</label>
-      <input type="text" id="setSub" maxlength="50" placeholder="Conner &amp; Mikayla" onchange="setBrand()">
+      <input type="text" id="setSub" maxlength="50" placeholder="University Fund">
     </div>
     <div class="setting-row">
       <div class="sr-info">
         <div class="sr-title">Currency symbol</div>
         <div class="sr-desc">Shown before amounts</div>
       </div>
-      <input type="text" id="currencySym" value="R" maxlength="3" style="width:60px;text-align:center;background:var(--panel-solid);border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--txt);font-family:var(--font)" onchange="setCurrency()">
+      <input type="text" id="currencySym" value="R" maxlength="3" style="width:60px;text-align:center;background:var(--panel-solid);border:1px solid var(--border2);border-radius:8px;padding:8px;color:var(--txt);font-family:var(--font)">
     </div>
-    <div class="note-line">Bargain Bakkies Education Fund · works offline · install to home screen for app-like use.</div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-primary" onclick="saveSettings()">✓  Save Settings</button>
+    </div>
+    <div class="setting-row" style="margin-top:10px;border-top:1px solid var(--border)">
+      <div class="sr-info">
+        <div class="sr-title">Updating the app</div>
+        <div class="sr-desc">Replace only index.html on GitHub. Your Google Sheet, Apps Script URL, and all your saved data are stored separately — they are never affected by updating the HTML file. Just upload the new index.html and the app refreshes within a minute.</div>
+      </div>
+    </div>
+    <div class="note-line">C&amp;M Future Fund · works offline · install to home screen for full-screen app experience.</div>
   </div>
 </div>
 
@@ -746,6 +791,7 @@ const THEMES=[
 
 let DATA=[];
 let filterType='all';
+let CAP_OVERRIDE={}; // {total:null, deployed:null} — manual overrides for capital pot
 let CUR='R';
 
 // ---- Storage ----
@@ -769,8 +815,35 @@ function load(){
   document.getElementById('setTitle').value=bTitle;
   document.getElementById('setSub').value=bSub;
   const gs=localStorage.getItem('bb_gsurl'); if(gs)document.getElementById('gsUrl').value=gs;
+  try{ CAP_OVERRIDE=JSON.parse(localStorage.getItem('bb_cap_override')||'{}'); }catch(e){ CAP_OVERRIDE={}; }
 }
 function save(){ localStorage.setItem('bb_data',JSON.stringify(DATA)); }
+function saveCapOverride(){ localStorage.setItem('bb_cap_override',JSON.stringify(CAP_OVERRIDE)); }
+
+// ---- Edit capital pot values ----
+function editCapital(field){
+  const labels={total:'Total in pot',deployed:'Deployed in vehicles'};
+  const current = field==='total'
+    ? (CAP_OVERRIDE.total!=null ? CAP_OVERRIDE.total : calcRawCapital().potTotal)
+    : (CAP_OVERRIDE.deployed!=null ? CAP_OVERRIDE.deployed : calcRawCapital().deployed);
+  const val=prompt(`Enter correct value for "${labels[field]}" (R):`, Math.round(current));
+  if(val===null) return;
+  const n=Number(val);
+  if(isNaN(n)){ toast('Enter a valid number','err'); return; }
+  CAP_OVERRIDE[field]=n;
+  saveCapOverride();
+  renderAll();
+  toast(labels[field]+' updated','ok');
+}
+function calcRawCapital(){
+  // Raw calculation from entries (before any manual override)
+  let potTotal=0, deployed=0;
+  DATA.forEach(e=>{
+    if(e.type==='Capital Repayment') potTotal+=Number(e.amount)||0;
+    if(e.type==='Capital Withdrawal') deployed+=Number(e.amount)||0;
+  });
+  return {potTotal, deployed};
+}
 
 // ---- Format ----
 function fmt(n){
@@ -796,7 +869,7 @@ function typeClass(t){
 function calc(){
   let profC=0,profM=0,allocC=0,allocM=0,spendC=0,spendM=0,sales=0;
   let potTotal=0,deployed=0;
-  let etfC=0,etfM=0,tfsaC=0,tfsaM=0,bwC=0,bwM=0,cbC=0,cbM=0,invC=0,invM=0;
+  let etfC=0,etfM=0,tfsaC=0,tfsaM=0,bwC=0,bwM=0,cbC=0,cbM=0;
 
   DATA.forEach(e=>{
     if(e.type==='Vehicle Profit'){
@@ -809,52 +882,82 @@ function calc(){
     if(e.type==='Capital Withdrawal') deployed+=Number(e.amount)||0;
     if(e.type==='Investment Deposit'){
       const c=Number(e.cInv)||0, m=Number(e.mInv)||0;
-      invC+=c; invM+=m;
-      if(e.acct==='TFSA'){tfsaC+=c;tfsaM+=m;} else {etfC+=c;etfM+=m;}
+      // ETF and TFSA tracked separately
+      if(e.acct==='TFSA'){tfsaC+=c;tfsaM+=m;}
+      else {etfC+=c;etfM+=m;}
       if(e.source==='Carlos Bydrae'){cbC+=c;cbM+=m;} else {bwC+=c;bwM+=m;}
     }
   });
-  // capital repayments include both 'into pot' and 'capital back' — net deployed = withdrawn - capital back
-  // we treat all Capital Repayment as adding to pot total; deployed = total withdrawals minus repayments-back
-  // Simplify: available = potTotal - deployed (deployed already reduced by repayments via separate entries)
-  const avail = potTotal - deployed;
-  const remC = profC-allocC-spendC, remM=profM-allocM-spendM;
-  const capShare = avail/2; // each child's share of available pot
-  return {profC,profM,allocC,allocM,spendC,spendM,sales,potTotal,deployed,avail,
-          etfC,etfM,tfsaC,tfsaM,bwC,bwM,cbC,cbM,invC,invM,remC,remM,capShare,
-          grandC: capShare+remC+invC, grandM: capShare+remM+invM};
-}
 
+  // Apply manual overrides if set
+  if(CAP_OVERRIDE.total!=null) potTotal=CAP_OVERRIDE.total;
+  if(CAP_OVERRIDE.deployed!=null) deployed=CAP_OVERRIDE.deployed;
+
+  const avail=potTotal-deployed;
+  const remC=profC-allocC-spendC, remM=profM-allocM-spendM;
+  const capShare=avail/2;
+  // Grand total = capital + cash profit + ETF investments only (TFSA excluded)
+  const grandC=capShare+remC+etfC;
+  const grandM=capShare+remM+etfM;
+  return {profC,profM,allocC,allocM,spendC,spendM,sales,
+          potTotal,deployed,avail,
+          etfC,etfM,tfsaC,tfsaM,bwC,bwM,cbC,cbM,
+          remC,remM,capShare,grandC,grandM};
+}
 // ---- Render dashboard ----
 function renderDash(){
   const k=calc();
-  const set=(id,v)=>document.getElementById(id).textContent=v;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  // Grand total cards (ETF only, no TFSA)
   set('d-conner-total',fmtShort(k.grandC)); set('d-mikayla-total',fmtShort(k.grandM));
   set('d-conner-cap',fmt(k.capShare)); set('d-mikayla-cap',fmt(k.capShare));
   set('d-conner-cash',fmt(k.remC)); set('d-mikayla-cash',fmt(k.remM));
-  set('d-conner-inv',fmt(k.invC)); set('d-mikayla-inv',fmt(k.invM));
+  set('d-conner-inv',fmt(k.etfC)); set('d-mikayla-inv',fmt(k.etfM));
+  set('d-conner-tfsa',fmt(k.tfsaC)); set('d-mikayla-tfsa',fmt(k.tfsaM));
+  // Capital pot
   set('d-pot-total',fmtShort(k.potTotal)); set('d-pot-deployed',fmtShort(k.deployed));
   set('d-pot-avail',fmtShort(k.avail));
-  // fund bar
+  // Fund bar — updates live when capital overrides applied
   const tot=k.potTotal||1;
   const depPct=Math.max(0,Math.min(100,k.deployed/tot*100));
-  document.getElementById('d-fund-bar').innerHTML=
+  const barEl=document.getElementById('d-fund-bar');
+  if(barEl) barEl.innerHTML=
     `<i style="width:${depPct}%;background:var(--capital)"></i><i style="width:${100-depPct}%;background:var(--profit)"></i>`;
+  // Profit summary
   set('d-prof-c',fmt(k.profC)); set('d-prof-m',fmt(k.profM));
   set('d-alloc-c',fmt(k.allocC)); set('d-alloc-m',fmt(k.allocM));
   set('d-spend-c',fmt(k.spendC)); set('d-spend-m',fmt(k.spendM));
   set('d-rem-c',fmt(k.remC)); set('d-rem-m',fmt(k.remM));
   set('d-sales-count',k.sales);
+  // Investments (ETF only on dashboard)
   set('d-etf-c',fmt(k.etfC)); set('d-etf-m',fmt(k.etfM));
-  set('d-tfsa-c',fmt(k.tfsaC)); set('d-tfsa-m',fmt(k.tfsaM));
-  set('d-inv-c',fmt(k.invC)); set('d-inv-m',fmt(k.invM));
-  // capital tab
+  set('d-inv-c',fmt(k.etfC)); set('d-inv-m',fmt(k.etfM));
+  // Capital tab
   set('c-total',fmtShort(k.potTotal)); set('c-deployed',fmtShort(k.deployed)); set('c-avail',fmtShort(k.avail));
-  // invest tab
+  // Investments tab (ETF only)
   set('i-etf-c',fmt(k.etfC)); set('i-etf-m',fmt(k.etfM));
-  set('i-tfsa-c',fmt(k.tfsaC)); set('i-tfsa-m',fmt(k.tfsaM));
   set('i-bw-c',fmt(k.bwC)); set('i-bw-m',fmt(k.bwM));
   set('i-cb-c',fmt(k.cbC)); set('i-cb-m',fmt(k.cbM));
+  // TFSA tab totals (from entry log — paid-in amounts)
+  set('t-total-c',fmt(k.tfsaC)); set('t-total-m',fmt(k.tfsaM));
+  // TFSA current value from holdings (if available)
+  if(HOLDINGS.Conner && HOLDINGS.Conner.TFSA){
+    const cv=HOLDINGS.Conner.TFSA.reduce((s,f)=>s+(fundCurrent(f).value),0);
+    const cp=HOLDINGS.Conner.TFSA.reduce((s,f)=>s+(fundCurrent(f).paidIn),0);
+    set('t-value-c',fmt(cv)); set('t-growth-c',fmt(cv-cp));
+  }
+  if(HOLDINGS.Mikayla && HOLDINGS.Mikayla.TFSA){
+    const mv=HOLDINGS.Mikayla.TFSA.reduce((s,f)=>s+(fundCurrent(f).value),0);
+    const mp=HOLDINGS.Mikayla.TFSA.reduce((s,f)=>s+(fundCurrent(f).paidIn),0);
+    set('t-value-m',fmt(mv)); set('t-growth-m',fmt(mv-mp));
+  }
+  // TFSA source breakdown
+  const tfsaBW_C=DATA.filter(e=>e.type==='Investment Deposit'&&e.acct==='TFSA'&&e.source==='Bakkie Winste').reduce((s,e)=>s+(Number(e.cInv)||0),0);
+  const tfsaBW_M=DATA.filter(e=>e.type==='Investment Deposit'&&e.acct==='TFSA'&&e.source==='Bakkie Winste').reduce((s,e)=>s+(Number(e.mInv)||0),0);
+  const tfsaCB_C=DATA.filter(e=>e.type==='Investment Deposit'&&e.acct==='TFSA'&&e.source==='Carlos Bydrae').reduce((s,e)=>s+(Number(e.cInv)||0),0);
+  const tfsaCB_M=DATA.filter(e=>e.type==='Investment Deposit'&&e.acct==='TFSA'&&e.source==='Carlos Bydrae').reduce((s,e)=>s+(Number(e.mInv)||0),0);
+  set('t-bw-c',fmt(tfsaBW_C)); set('t-bw-m',fmt(tfsaBW_M));
+  set('t-cb-c',fmt(tfsaCB_C)); set('t-cb-m',fmt(tfsaCB_M));
 }
 
 // ---- Render history ----
@@ -916,7 +1019,32 @@ function renderInvest(){
   document.getElementById('invest-list').innerHTML=
     list.length?list.map(entryHTML).join(''):'<div class="empty"><div class="ico">📈</div>No investments yet</div>';
 }
-function renderAll(){renderDash();renderHistory();renderCapital();renderInvest();}
+function renderTFSA(){
+  ['Conner','Mikayla'].forEach(child=>{
+    const funds=(HOLDINGS[child]&&HOLDINGS[child].TFSA)||[];
+    const elId=`tfsa-list-${child==='Conner'?'c':'m'}`;
+    const el=document.getElementById(elId); if(!el) return;
+    if(!funds.length){
+      el.innerHTML=`<div class="empty"><div class="ico">📊</div>No TFSA funds yet — add via Holdings → ${child} → TFSA</div>`;
+      return;
+    }
+    el.innerHTML=funds.map((f,i)=>{
+      const c=fundCurrent(f);
+      const up=c.pl>=0;
+      return `<div class="hold-card" onclick="holdChild='${child}';holdAcct='TFSA';openFund(${i});switchView('holdings')">
+        <div class="hc-badge" style="background:var(--mikayla-bg);color:var(--mikayla)">${esc(f.short||'TFSA')}</div>
+        <div class="hc-mid"><div class="hc-name">${esc(f.fund)}</div>
+          <div class="hc-tick">${f.ticker?esc(f.ticker):'manual'} · paid in ${fmt(c.paidIn)}</div></div>
+        <div class="hc-right">
+          <div class="hc-val">${fmt(c.value)}</div>
+          <div class="hc-pl ${up?'up':'down'}">${up?'+':''}${fmt(c.pl)} (${up?'+':''}${c.plpct.toFixed(2)}%)</div>
+        </div>
+        <div class="hc-arrow">›</div>
+      </div>`;
+    }).join('');
+  });
+}
+function renderAll(){renderDash();renderHistory();renderCapital();renderInvest();renderTFSA();}
 
 // ---- Filter ----
 function setFilter(btn,f){
@@ -1063,27 +1191,28 @@ function setTheme(id){
   localStorage.setItem('bb_theme',id);
   renderThemes();
 }
-function setCurrency(){
-  CUR=document.getElementById('currencySym').value||'R';
-  localStorage.setItem('bb_cur',CUR);
-  renderAll();
-}
-function setBrand(){
+function saveSettings(){
+  // Brand
   const logo=document.getElementById('setLogo').value.trim()||'C&M';
-  const title=document.getElementById('setTitle').value.trim()||'Bargain Bakkies';
-  const sub=document.getElementById('setSub').value.trim()||'Conner & Mikayla';
+  const title=document.getElementById('setTitle').value.trim()||'C&M Future Fund';
+  const sub=document.getElementById('setSub').value.trim()||'University Fund';
   localStorage.setItem('bb_logo',logo);
   localStorage.setItem('bb_title',title);
   localStorage.setItem('bb_sub',sub);
   document.getElementById('brandLogo').textContent=logo;
   document.getElementById('brandTitle').textContent=title;
   document.getElementById('brandSub').textContent=sub;
-  toast('Saved','ok');
+  // Currency
+  CUR=document.getElementById('currencySym').value||'R';
+  localStorage.setItem('bb_cur',CUR);
+  renderAll(); renderHoldings();
+  closeModal('settingsModal');
+  toast('Settings saved','ok');
 }
 
 // ---- Backup ----
 function exportData(){
-  const blob=new Blob([JSON.stringify({app:'BargainBakkiesFund',version:2,exported:new Date().toISOString(),data:DATA,holdings:HOLDINGS,cash:CASH},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({app:'BargainBakkiesFund',version:3,exported:new Date().toISOString(),data:DATA,holdings:HOLDINGS,cash:CASH,capOverride:CAP_OVERRIDE},null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='bargain-bakkies-backup-'+new Date().toISOString().slice(0,10)+'.json';
@@ -1102,6 +1231,7 @@ function importData(ev){
       DATA=arr;
       if(j.holdings){ HOLDINGS=j.holdings; saveHoldings(); }
       if(j.cash){ CASH=j.cash; saveCash(); }
+      if(j.capOverride){ CAP_OVERRIDE=j.capOverride; saveCapOverride(); }
       renderHoldings();
       save(); renderAll(); closeModal('dataModal');
       toast('Imported '+arr.length+' entries','ok');
@@ -1122,8 +1252,10 @@ function exportCSV(){
 function resetData(){
   if(!confirm('Reset everything to original historical data? Export a backup first if unsure.'))return;
   DATA=JSON.parse(JSON.stringify(SEED_DATA));save();
-  HOLDINGS=JSON.parse(JSON.stringify(HOLDINGS_SEED));saveHoldings();renderHoldings();
-  renderAll();closeModal('dataModal');
+  HOLDINGS=JSON.parse(JSON.stringify(HOLDINGS_SEED));saveHoldings();
+  CASH={};saveCash();
+  CAP_OVERRIDE={};saveCapOverride();
+  renderAll();renderHoldings();closeModal('dataModal');
   toast('Data reset','ok');
 }
 function saveGsUrl(){
